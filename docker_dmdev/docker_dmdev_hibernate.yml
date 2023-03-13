@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: db_dmdev_hibernate
+    image: postgres
+    environment:
+      POSTGRES_DB: "db_dmdev_hibernate"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "qwerty"
+    ports:
+      - "5438:5432"
+    restart: unless-stopped
+    volumes:
+      - ./data:/var/lib/postgresql/data
