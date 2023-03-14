@@ -11,5 +11,12 @@
     <property name="connection.driver_class">org.postgresql.Driver</property>
     <!--диалект для постгреса 10 и старше-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
+
+    <!--Вспомогательно для разработки-->
+    <property name="show_sql">true</property>
+    <property name="format_sql">true</property>
+
+    <!--Указываем сущности-->
+    <mapping class="ru.edu.entity.User"/>
   </session-factory>
 </hibernate-configuration>
