@@ -5,6 +5,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
+import ru.edu.converter.BirthdateConverter;
+import ru.edu.entity.Birthday;
 import ru.edu.entity.Role;
 import ru.edu.entity.User;
 
@@ -28,6 +30,12 @@ public class HibernateRunner {
     // если конфиг в другом месте, то указываем явно configuration.configure("path/to");
     configuration.configure();
 
+    // BirthdateConverter будет маппить наш объект Birthday на sql
+    // вместо аннотации @Convert(converter = BirthdateConverter.class) у поля сущности
+//    configuration.addAttributeConverter(new BirthdateConverter(), true);
+    // вместо второго параметра можно ставить @Converter(autoApply = true) в самом конвертере
+    configuration.addAttributeConverter(new BirthdateConverter());
+
     // configuration - имеет внутри себя много настроек + добавляет настройки из hibernate.cfg.xml
     // на основе суммарных настроек создаем SessionFactory - аналог пула коннекшенов
     // SessionFactory должен быть 1 на все приложение. Его надо закрыть при завершении
@@ -39,11 +47,10 @@ public class HibernateRunner {
       session.beginTransaction();
 
       User user = User.builder()
-        .username("test1@test.ru")
+        .username("test5@test.ru")
         .firstname("ivan")
         .lastname("ivanov")
-        .birthDate(LocalDate.of(2000, 1, 1))
-        .age(30)
+        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
         .role(Role.ADMIN)
         .build();
 

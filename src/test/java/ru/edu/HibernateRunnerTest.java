@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import org.junit.jupiter.api.Test;
+import ru.edu.entity.Birthday;
 import ru.edu.entity.User;
 
 public class HibernateRunnerTest {
@@ -22,8 +23,7 @@ public class HibernateRunnerTest {
       .username("test6@test.ru")
       .firstname("ivan")
       .lastname("ivanov")
-      .birthDate(LocalDate.of(2000, 1, 1))
-      .age(30)
+      .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
       .build();
 
     String sql = """
