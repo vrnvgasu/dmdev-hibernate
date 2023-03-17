@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
+import ru.edu.entity.Role;
 import ru.edu.entity.User;
 
 public class HibernateRunner {
@@ -31,19 +32,20 @@ public class HibernateRunner {
     // на основе суммарных настроек создаем SessionFactory - аналог пула коннекшенов
     // SessionFactory должен быть 1 на все приложение. Его надо закрыть при завершении
     try (SessionFactory sessionFactory = configuration.buildSessionFactory();
-        // Session - аналог коннекта (подключения к бд)
-        Session session = sessionFactory.openSession()) {
+      // Session - аналог коннекта (подключения к бд)
+      Session session = sessionFactory.openSession()) {
 
       // работа с сессией (коннектом) идет внутри транзакции
       session.beginTransaction();
 
       User user = User.builder()
-          .username("test4@test.ru")
-          .firstname("ivan")
-          .lastname("ivanov")
-          .birthDate(LocalDate.of(2000,1,1))
-          .age(30)
-          .build();
+        .username("test1@test.ru")
+        .firstname("ivan")
+        .lastname("ivanov")
+        .birthDate(LocalDate.of(2000, 1, 1))
+        .age(30)
+        .role(Role.ADMIN)
+        .build();
 
       // передаем в сессию (коннект) сущность (@Entity)
       session.save(user);
