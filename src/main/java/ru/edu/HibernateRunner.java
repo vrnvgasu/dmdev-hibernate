@@ -82,9 +82,37 @@ public class HibernateRunner {
 
       // получить сущность по ее идентификатору
       // операцию выполняет сразу
-      User userFromDB = session.get(User.class, "test5@test.ru");
+      User userFromDB1 = session.get(User.class, "test5@test.ru");
+      // второй раз тот же select не выполнится. Это first level cache
+      // PersistenceContext - это first level cache
+      User userFromDB2 = session.get(User.class, "test5@test.ru");
+
+      // удалит объект из PersistenceContext (из мапы сессии)
+      session.evict(userFromDB1);
+      // сделает селект, т.к. evict удалил объект из контекста
+      User userFromDB3 = session.get(User.class, "test5@test.ru");
+
+      // полностью чистит контекст
+      session.clear();
+      // сделает селект, т.к. clear полностью очистил контекст
+      User userFromDB4 = session.get(User.class, "test5@test.ru");
+
+      // если объект в контексте, то любое его изменение в java
+      // сразу же идет в БД (или подтягивает данные при запросе связи)
+      // это делает сессию грязной (dirty session)
+      userFromDB4.setLastname("Неожиданное меняет DB2:)");
+      // проверяем - грязная ли сессия (были ли неожиданные изменения в БД)
+      System.out.println(session.isDirty());
+
+      // принудительно отправляем все данные из контекста в БД
+      // синронизируемся с БД
+      session.flush();
+
 
       session.getTransaction().commit();
+
+      // когда мы выходим из try with resource срабатывает
+      // session.close(); - соответственно контекст этой сессии очистится
     }
   }
 
