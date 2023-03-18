@@ -1,5 +1,6 @@
 package ru.edu.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -12,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import ru.edu.converter.BirthdateConverter;
 
 // POJO: @Data, @NoArgsConstructor, @AllArgsConstructor
@@ -23,6 +26,7 @@ import ru.edu.converter.BirthdateConverter;
 @Builder
 @Entity // сущность хибернейта
 @Table(name = "users", schema = "public")
+@TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
 public class User {
 
   // главное требование к id - реализация Serializable
@@ -41,5 +45,10 @@ public class User {
 
   @Enumerated(EnumType.STRING) // приводим ENUM к строке
   private Role role;
+
+//  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
+//  @Type(type = "jsonb") // работает, т.к. в JsonBinaryType есть метод public String getName() {return "jsonb";}
+  @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
+  private String info;
 
 }

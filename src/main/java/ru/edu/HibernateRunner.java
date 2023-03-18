@@ -1,5 +1,6 @@
 package ru.edu;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,6 +37,9 @@ public class HibernateRunner {
     // вместо второго параметра можно ставить @Converter(autoApply = true) в самом конвертере
     configuration.addAttributeConverter(new BirthdateConverter());
 
+    // добавили тип из библиотеки hibernate-types-52
+    configuration.registerTypeOverride(new JsonBinaryType());
+
     // configuration - имеет внутри себя много настроек + добавляет настройки из hibernate.cfg.xml
     // на основе суммарных настроек создаем SessionFactory - аналог пула коннекшенов
     // SessionFactory должен быть 1 на все приложение. Его надо закрыть при завершении
@@ -47,11 +51,17 @@ public class HibernateRunner {
       session.beginTransaction();
 
       User user = User.builder()
-        .username("test5@test.ru")
+        .username("test7@test.ru")
         .firstname("ivan")
         .lastname("ivanov")
         .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
         .role(Role.ADMIN)
+        .info("""
+          {
+            "name": "Ivan",
+            "id": 25
+          }
+          """)
         .build();
 
       // передаем в сессию (коннект) сущность (@Entity)
