@@ -1,9 +1,13 @@
 package ru.edu;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
@@ -15,6 +19,25 @@ import ru.edu.entity.Birthday;
 import ru.edu.entity.User;
 
 public class HibernateRunnerTest {
+
+  @Test
+  // Тест не рабочий. Это совсем упрощенный пример, как работает hibernate
+    // session.get(User.class, "test5@test.ru")
+  void checkGetReflectionAPI()
+    throws SQLException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+    PreparedStatement statement = null;
+    ResultSet resultSet = statement.executeQuery();
+
+    Class<User> userClass = User.class;
+
+    // создали конструктор и из него новый объект
+    Constructor<User> constructor = userClass.getConstructor();
+    User user = constructor.newInstance();
+    // заполнили одно из полей данными из запроса к БД
+    Field userNameField = userClass.getDeclaredField("username");
+    userNameField.setAccessible(true);
+    userNameField.set(user, resultSet.getString("username"));
+  }
 
   @Test
   // Пример, как работает Hibernate через рефлексию
