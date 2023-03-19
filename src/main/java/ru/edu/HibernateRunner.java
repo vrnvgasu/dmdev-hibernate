@@ -4,8 +4,11 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.edu.converter.BirthdateConverter;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Role;
@@ -14,7 +17,41 @@ import ru.edu.util.HibernateUtil;
 
 public class HibernateRunner {
 
-//  public static void main(String[] args) {
+  // выбираем org.slf4j.Logger
+  // HibernateRunner.class будет передаваться в %c в конфиг логгера
+  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
+
+  public static void main(String[] args) {
+    // пока сущность никак не связана с сессиями (Transient)
+    User user = User.builder()
+      .username("ivan@gmail.ru")
+      .firstname("ivan")
+      .lastname("ivanov")
+      .build();
+
+    log.info("User entity is in transient state, object {}", user);
+
+    try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
+      Session session1 = sessionFactory.openSession();
+      try (session1) {
+        Transaction transaction = session1.beginTransaction();
+        log.trace("Transaction is created {}", transaction);
+
+        // добавляем сущность в PersistenceContext первой сессии
+        session1.saveOrUpdate(user);
+        log.trace("User {} is in Persistence state, session {}", user.getUsername(), transaction);
+
+        session1.getTransaction().commit();
+      } catch (Exception e) {
+        log.error("Exception occurred", e);
+        throw e;
+      }
+
+      log.warn("User {} is in detached state, session is closed {}", user.getUsername(), session1);
+    }
+  }
+
+  //  public static void main(String[] args) {
 //    Configuration configuration = new Configuration();
 //
 //    // укажем Entity
@@ -116,47 +153,5 @@ public class HibernateRunner {
 //      // session.close(); - соответственно контекст этой сессии очистится
 //    }
 //  }
-
-  public static void main(String[] args) {
-    // пока сущность никак не связана с сессиями (Transient)
-    User user = User.builder()
-      .username("ivan@gmail.ru")
-      .firstname("ivan")
-      .lastname("ivanov")
-      .build();
-
-    try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
-      try(Session session1 = sessionFactory.openSession()) {
-        session1.beginTransaction();
-
-        // добавляем сущность в PersistenceContext первой сессии
-        session1.saveOrUpdate(user);
-
-        session1.getTransaction().commit(); 
-      }
-      try(Session session2 = sessionFactory.openSession()) {
-        session2.beginTransaction();
-
-
-
-        // сделает селект и переведет user в Persistence. В конце удалит
-//        session2.delete(user);
-
-
-//        user.setFirstname("test1");
-        // refresh сделает запрос, возьмет данные из бд и поменяет в java firstName на ivan
-        // переведет user в Persistence
-//        session2.refresh(user);
-
-        user.setFirstname("test1");
-        // merge сделает запрос, переведет user в Persistence
-        // сделает update в БД и вернет новый объект. В новом объекте уже будет новый firstName
-        // при этом данные в БД еще не поменялись (поменяются в конце транзакции)
-        Object userMerged = session2.merge(user);
-
-        session2.getTransaction().commit();
-      }
-    }
-  }
 
 }

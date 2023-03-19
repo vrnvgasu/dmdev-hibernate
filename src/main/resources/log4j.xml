@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+
+  <!--appender - указывает, куда отправляет лог-->
+  <!--Тут отправляет на консоль в ConsoleAppender-->
+  <appender name="console" class="org.apache.log4j.ConsoleAppender">
+    <!--В консоле отправляет в вывод System.out-->
+    <param name="target" value="System.out"/>
+
+    <!--Формат выводимого сообщения-->
+    <layout class="org.apache.log4j.PatternLayout">
+      <!--%p - приоритет: error, fatal, warn и тд-->
+      <!--%c - класс, где была ошибка-->
+      <!--%L - строка-->
+      <!--%m - текст сообщения-->
+      <!--https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html - подробное описание-->
+      <param name="conversionPattern" value="[%d{HH:mm:ss,SSS}] %p [%c: %L] %m%n"/>
+    </layout>
+  </appender>
+
+  <root>
+    <!--уровень trace и выше. Можно указать ALL или trace, если все хотим-->
+    <level value="info"/>
+    <!--в какой appender прокидываем. console определили выше.
+    appender-ref может быть несколько-->
+    <appender-ref ref="console"/>
+  </root>
+
+</log4j:configuration>
