@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.edu.converter.BirthdateConverter;
 import ru.edu.entity.Birthday;
+import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Role;
 import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
@@ -27,9 +28,13 @@ public class HibernateRunner {
   public static void main(String[] args) {
     // пока сущность никак не связана с сессиями (Transient)
     User user = User.builder()
-      .username("ivan@gmail.ru")
-      .firstname("ivan")
-      .lastname("ivanov")
+      .username("petr2@gmail.ru")
+      // Embedded
+      .personalInfo(PersonalInfo.builder()
+        .firstname("petr")
+        .personalLastname("petrov")
+        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
+        .build())
       .build();
 
     log.info("User entity is in transient state, object {}", user);

@@ -2,8 +2,10 @@ package ru.edu.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,15 +35,11 @@ public class User {
   // String implements Serializable
   @Id
   private String username;
-  private String firstname;
-  private String lastname;
 
-  // BirthdateConverter будет маппить наш объект Birthday на sql
-  // вместо @Convert можно сразу задать в настройках Configuration хибернейта
-//  @Convert(converter = BirthdateConverter.class)
-  @Column(name = "birth_date")
-  // добавили наш собственный тип ru.edu.entity.Birthday
-  private Birthday birthDate;
+  @Embedded // не обязательная аннотация (но так нагляднее)
+  // указали явный маппинг поля personalLastname к колонке lastname
+  @AttributeOverride(name = "personalLastname", column = @Column(name = "lastname"))
+  private PersonalInfo personalInfo;
 
   @Enumerated(EnumType.STRING) // приводим ENUM к строке
   private Role role;

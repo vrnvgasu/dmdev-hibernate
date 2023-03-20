@@ -16,6 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
+import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.User;
 
 public class HibernateRunnerTest {
@@ -44,9 +45,11 @@ public class HibernateRunnerTest {
   void checkReflectionAPI() {
     User user = User.builder()
       .username("test6@test.ru")
-      .firstname("ivan")
-      .lastname("ivanov")
-      .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
+      .personalInfo(PersonalInfo.builder()
+        .firstname("ivan")
+        .personalLastname("ivanov")
+        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
+        .build())
       .build();
 
     String sql = """
