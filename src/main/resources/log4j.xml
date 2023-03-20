@@ -20,12 +20,49 @@
     </layout>
   </appender>
 
+  <appender name="file" class="org.apache.log4j.RollingFileAppender">
+    <!--путь к файлу (будет в корне)-->
+    <param name="file" value="logs/hibernate-starter.log"/>
+
+    <param name="append" value="true"/>
+    <param name="maxFileSize" value="20MB"/>
+    <!--кол-во файлов по 20MB-->
+    <param name="maxBackupIndex" value="10"/>
+
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="conversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss,SSS}] %p [%c: %L] %m%n"/>
+    </layout>
+
+    <filter class="org.apache.log4j.varia.LevelRangeFilter">
+      <param name="LevelMin" value="ALL"/>
+    </filter>
+  </appender>
+
+  <!--рутовый логгер обязан быть. Дальше можем создавать свои-->
   <root>
     <!--уровень trace и выше. Можно указать ALL или trace, если все хотим-->
     <level value="info"/>
     <!--в какой appender прокидываем. console определили выше.
     appender-ref может быть несколько-->
     <appender-ref ref="console"/>
+
+    <!--а вот еще один аппендер, куда будет направлять логи-->
+    <appender-ref ref="file"/>
   </root>
+  
+  <!--свой логгер-->
+  <!--название логгера определяется по пакету для отслеживания.
+  Все сообщения из пакета будут попадать в логгер-->
+  <!--additivity="false" не дублировать сообщения из логера выше по иерархии (тут из root)-->
+  <logger name="ru.edu" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="console"/>
+  </logger>
+
+  <!--additivity="false" не дублировать сообщения из logger name="ru.edu" и root-->
+  <logger name="ru.edu.entity" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="console"/>
+  </logger>
 
 </log4j:configuration>

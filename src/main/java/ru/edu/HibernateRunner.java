@@ -2,6 +2,7 @@ package ru.edu;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -15,11 +16,13 @@ import ru.edu.entity.Role;
 import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
 
+@Slf4j// генерит строку private static final Logger log
 public class HibernateRunner {
 
   // выбираем org.slf4j.Logger
   // HibernateRunner.class будет передаваться в %c в конфиг логгера
-  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
+  // можно заменить аннотацией @Slf4j
+//  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
 
   public static void main(String[] args) {
     // пока сущность никак не связана с сессиями (Transient)
