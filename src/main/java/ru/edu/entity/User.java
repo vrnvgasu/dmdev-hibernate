@@ -9,8 +9,12 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,8 +36,23 @@ import ru.edu.converter.BirthdateConverter;
 public class User {
 
   // главное требование к id - реализация Serializable
-  // String implements Serializable
   @Id
+  // AUTO - для postgreslq подставляет SEQUENCE
+  // IDENTITY - ставить, когда создали автоинкремент BIGSERIAL
+  // IDENTITY лучше по производительности и простоте
+  // SEQUENCE - используем последовательность. Будет на 1 запрос больше при вставке: select nextval ('users_id_seq')
+  // TABLE - редко. Если БД не поддерживает автоинкремент или SEQUENCE
+  // generator - при стратегии SEQUENCE и TABLE
+//  @GeneratedValue(strategy = GenerationType.TABLE, generator = "my_user_gen")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  // @SequenceGenerator нужна при стратегии SEQUENCE
+//  @SequenceGenerator(name = "my_user_gen", sequenceName = "users_id_seq", allocationSize = 1)
+  // для стратегии TABLE
+//  @TableGenerator(name = "my_user_gen", table = "all_sequence", allocationSize = 1,
+//    pkColumnName = "table_name", valueColumnName = "pk_value")
+  private Long id;
+
+  @Column(unique = true)
   private String username;
 
   @Embedded // не обязательная аннотация (но так нагляднее)
@@ -44,7 +63,7 @@ public class User {
   @Enumerated(EnumType.STRING) // приводим ENUM к строке
   private Role role;
 
-//  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
+  //  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
 //  @Type(type = "jsonb") // работает, т.к. в JsonBinaryType есть метод public String getName() {return "jsonb";}
   @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
   private String info;

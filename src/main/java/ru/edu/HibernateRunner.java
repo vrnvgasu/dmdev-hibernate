@@ -28,7 +28,7 @@ public class HibernateRunner {
   public static void main(String[] args) {
     // пока сущность никак не связана с сессиями (Transient)
     User user = User.builder()
-      .username("petr2@gmail.ru")
+      .username("petr3@gmail.ru")
       // Embedded
       .personalInfo(PersonalInfo.builder()
         .firstname("petr")
