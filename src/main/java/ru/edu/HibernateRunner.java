@@ -29,7 +29,7 @@ public class HibernateRunner {
     // пока сущность никак не связана с сессиями (Transient)
     User user = User.builder()
       .username("petr3@gmail.ru")
-      // Embedded
+      // EmbeddedId
       .personalInfo(PersonalInfo.builder()
         .firstname("petr")
         .personalLastname("petrov")
@@ -56,6 +56,21 @@ public class HibernateRunner {
       }
 
       log.warn("User {} is in detached state, session is closed {}", user.getUsername(), session1);
+
+      try(Session session2 = sessionFactory.openSession()) {
+        session2.beginTransaction();
+
+        // PersonalInfo - составной ключ @EmbeddedId
+        PersonalInfo key = PersonalInfo.builder()
+          .firstname("petr")
+          .personalLastname("petrov")
+          .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
+          .build();
+
+        User userFromBD = session2.get(User.class, key);
+
+        session2.getTransaction().commit();
+      }
     }
   }
 

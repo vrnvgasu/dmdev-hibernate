@@ -1,5 +1,7 @@
 package ru.edu.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -12,7 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Embeddable // встроенный компонент
-public class PersonalInfo {
+// Serializable - если компонент будет ключом - @EmbeddedId
+public class PersonalInfo implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = -4566880087971742021L;
 
   private String firstname;
 

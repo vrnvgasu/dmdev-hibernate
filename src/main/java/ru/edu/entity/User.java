@@ -6,6 +6,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,30 +36,13 @@ import ru.edu.converter.BirthdateConverter;
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
 public class User {
 
-  // главное требование к id - реализация Serializable
-  @Id
-  // AUTO - для postgreslq подставляет SEQUENCE
-  // IDENTITY - ставить, когда создали автоинкремент BIGSERIAL
-  // IDENTITY лучше по производительности и простоте
-  // SEQUENCE - используем последовательность. Будет на 1 запрос больше при вставке: select nextval ('users_id_seq')
-  // TABLE - редко. Если БД не поддерживает автоинкремент или SEQUENCE
-  // generator - при стратегии SEQUENCE и TABLE
-//  @GeneratedValue(strategy = GenerationType.TABLE, generator = "my_user_gen")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  // @SequenceGenerator нужна при стратегии SEQUENCE
-//  @SequenceGenerator(name = "my_user_gen", sequenceName = "users_id_seq", allocationSize = 1)
-  // для стратегии TABLE
-//  @TableGenerator(name = "my_user_gen", table = "all_sequence", allocationSize = 1,
-//    pkColumnName = "table_name", valueColumnName = "pk_value")
-  private Long id;
-
-  @Column(unique = true)
-  private String username;
-
-  @Embedded // не обязательная аннотация (но так нагляднее)
+  @EmbeddedId
   // указали явный маппинг поля personalLastname к колонке lastname
   @AttributeOverride(name = "personalLastname", column = @Column(name = "lastname"))
   private PersonalInfo personalInfo;
+
+  @Column(unique = true)
+  private String username;
 
   @Enumerated(EnumType.STRING) // приводим ENUM к строке
   private Role role;
