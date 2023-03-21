@@ -18,5 +18,6 @@
 
     <!--Указываем сущности-->
     <mapping class="ru.edu.entity.User"/>
+    <mapping class="ru.edu.entity.Company"/>
   </session-factory>
 </hibernate-configuration>

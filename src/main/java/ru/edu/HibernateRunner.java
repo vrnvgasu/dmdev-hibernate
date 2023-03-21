@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.edu.converter.BirthdateConverter;
 import ru.edu.entity.Birthday;
+import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Role;
 import ru.edu.entity.User;
@@ -26,50 +27,28 @@ public class HibernateRunner {
 //  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
 
   public static void main(String[] args) {
-    // пока сущность никак не связана с сессиями (Transient)
+    Company company = Company.builder()
+      .name("Google")
+      .build();
     User user = User.builder()
       .username("petr3@gmail.ru")
-      // EmbeddedId
       .personalInfo(PersonalInfo.builder()
         .firstname("petr")
         .personalLastname("petrov")
         .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
         .build())
+      .company(company)
       .build();
-
-    log.info("User entity is in transient state, object {}", user);
 
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
       Session session1 = sessionFactory.openSession();
       try (session1) {
-        Transaction transaction = session1.beginTransaction();
-        log.trace("Transaction is created {}", transaction);
+        session1.beginTransaction();
 
-        // добавляем сущность в PersistenceContext первой сессии
-        session1.saveOrUpdate(user);
-        log.trace("User {} is in Persistence state, session {}", user.getUsername(), transaction);
+        session1.save(company);
+        session1.save(user);
 
         session1.getTransaction().commit();
-      } catch (Exception e) {
-        log.error("Exception occurred", e);
-        throw e;
-      }
-
-      log.warn("User {} is in detached state, session is closed {}", user.getUsername(), session1);
-
-      try(Session session2 = sessionFactory.openSession()) {
-        session2.beginTransaction();
-
-        // PersonalInfo - составной ключ @EmbeddedId
-        PersonalInfo key = PersonalInfo.builder()
-          .firstname("petr")
-          .personalLastname("petrov")
-          .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
-          .build();
-
-        User userFromBD = session2.get(User.class, key);
-
-        session2.getTransaction().commit();
       }
     }
   }

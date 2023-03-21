@@ -18,6 +18,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -44,31 +46,19 @@ import ru.edu.converter.BirthdateConverter;
 @Entity // сущность хибернейта
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-// тип доступа к полям. AccessType.FIELD - по умолчанию через рефлексию
-// но раньше было не можно и использовали геттеры - AccessType.PROPERTY
-// AccessType.PROPERTY - нужно писать геттеры и ставить все аннотации над ними типа @Column
-// AccessType.PROPERTY, сейчас не подходит, т.к. мы явно геттеры в коде не пишем из-за ломбока
-@Access(AccessType.PROPERTY)
 public class User {
 
-  @EmbeddedId
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Embedded
   // указали явный маппинг поля personalLastname к колонке lastname
   @AttributeOverride(name = "personalLastname", column = @Column(name = "lastname"))
   private PersonalInfo personalInfo;
 
   @Column(unique = true)
-  // Transient не стоит использовать. В сущности надо хранить только поля из БД
-//  @Transient // не хотим сохранять и извлекать из БД
   private String username;
-
-//  // TemporalType.TIMESTAMP - по умолчанию. Маппит на timestamp в БД
-//  // всего 3 типа: TIMESTAMP, DATE, TIME
-//  @Temporal(TemporalType.TIMESTAMP)
-//  private Date date;
-//  // НО! Вместо этого лучше использовать новые типы:
-//  private LocalDateTime localDateTime;
-//  private LocalDate localDate;
-//  private LocalTime localTime;
 
   @Enumerated(EnumType.STRING) // приводим ENUM к строке
   private Role role;
@@ -77,5 +67,9 @@ public class User {
 //  @Type(type = "jsonb") // работает, т.к. в JsonBinaryType есть метод public String getName() {return "jsonb";}
   @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
   private String info;
+
+  @ManyToOne
+  @JoinColumn(name = "company_id")
+  private Company company;
 
 }
