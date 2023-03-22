@@ -8,6 +8,7 @@ import java.util.Date;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
@@ -71,9 +72,10 @@ public class User {
   @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
   private String info;
 
-  // optional = true - default. Делает left join
-  // optional = false. join - работает быстрее. Но company_id должен быть not null
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  // cascade - что делать со связью
+  // PERSIST не логично, т.к. company - главная сущность в этом отношении
+  // странно добавлять company к пользователю, пока компания не существует
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "company_id")
   private Company company;
 

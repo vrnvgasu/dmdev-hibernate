@@ -21,13 +21,13 @@ public class HibernateRunner {
 
   public static void main(String[] args) {
     Company company = Company.builder()
-      .name("Google")
+      .name("Amazon")
       .build();
     User user = User.builder()
-      .username("petr3@gmail.ru")
+      .username("ivan@gmail.ru")
       .personalInfo(PersonalInfo.builder()
-        .firstname("petr")
-        .personalLastname("petrov")
+        .firstname("ivan")
+        .personalLastname("ivanov")
         .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
         .build())
       .company(company)
@@ -38,11 +38,7 @@ public class HibernateRunner {
       try (session1) {
         session1.beginTransaction();
 
-        User userFromBD = session1.get(User.class, 1L);
-        // companyRelation - обертка над Company
-        Company companyRelation = userFromBD.getCompany();
-        // вытянули target из companyRelation
-        Object realCompany = Hibernate.unproxy(companyRelation);
+        session1.save(user);
 
         session1.getTransaction().commit();
 
