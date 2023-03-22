@@ -15,6 +15,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
@@ -43,6 +45,7 @@ import ru.edu.converter.BirthdateConverter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "company") // не делать select при отображении связи
 @Entity // сущность хибернейта
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
@@ -68,7 +71,9 @@ public class User {
   @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
   private String info;
 
-  @ManyToOne
+  // optional = true - default. Делает left join
+  // optional = false. join - работает быстрее. Но company_id должен быть not null
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "company_id")
   private Company company;
 
