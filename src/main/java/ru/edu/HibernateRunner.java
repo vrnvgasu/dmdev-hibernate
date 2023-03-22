@@ -1,20 +1,13 @@
 package ru.edu;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
-import org.hibernate.cfg.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.edu.converter.BirthdateConverter;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
-import ru.edu.entity.Role;
 import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
 
@@ -46,11 +39,15 @@ public class HibernateRunner {
         session1.beginTransaction();
 
         User userFromBD = session1.get(User.class, 1L);
+        // companyRelation - обертка над Company
+        Company companyRelation = userFromBD.getCompany();
+        // вытянули target из companyRelation
+        Object realCompany = Hibernate.unproxy(companyRelation);
 
         session1.getTransaction().commit();
 
         // делает select на связь, при FetchType.LAZY
-        System.out.println(userFromBD.getCompany());
+//        System.out.println(userFromBD.getCompany());
       }
     }
   }
