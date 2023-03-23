@@ -14,12 +14,29 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Table;
+import lombok.Cleanup;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
+import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.User;
+import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
+
+  @Test
+  void oneToMany() {
+    @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+    @Cleanup var session = sessionFactory.openSession();
+
+    session.beginTransaction();
+
+    Company company = session.get(Company.class, 1);
+    System.out.println(company);
+
+    session.getTransaction().commit();
+  }
 
   @Test
   // Тест не рабочий. Это совсем упрощенный пример, как работает hibernate
