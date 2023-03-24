@@ -26,6 +26,31 @@ import ru.edu.util.HibernateUtil;
 public class HibernateRunnerTest {
 
   @Test
+  void addUserToNewCompany() {
+    @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+    @Cleanup var session = sessionFactory.openSession();
+
+    session.beginTransaction();
+
+    Company company = session.get(Company.class, 3);
+    session.delete(company);
+
+//    Company company = Company.builder()
+//      .name("New Company")
+//      .build();
+//    User user = User.builder()
+//      .username("sveta@gmail.com")
+//      .build();
+//    company.addUser(user);
+//
+//    // у компании cascade = CascadeType.ALL
+//    // сохранит и пользователя
+//    session.save(company);
+
+    session.getTransaction().commit();
+  }
+
+  @Test
   void oneToMany() {
     @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
     @Cleanup var session = sessionFactory.openSession();

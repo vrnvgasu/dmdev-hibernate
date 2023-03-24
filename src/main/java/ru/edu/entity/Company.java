@@ -1,7 +1,9 @@
 package ru.edu.entity;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,9 +33,15 @@ public class Company {
   private String name;
 
   // если есть @ManyToOne у дочерней сущности, то можем просто указать mappedBy
-  @OneToMany(mappedBy = "company")
+  @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
   // можем указывать колонку в дочерней сущности явно, если нет mappedBy
 //  @JoinColumn(name = "company_id")
-  private Set<User> users;
+  @Builder.Default // чтобы установить дефолтное значение из поле при использовании билдера
+  private Set<User> users = new HashSet<>(); // new HashSet - чтобы не проверять на null
+
+  public void addUser(User user) {
+    users.add(user);
+    user.setCompany(this);
+  }
 
 }
