@@ -75,7 +75,7 @@ public class User {
   // cascade - что делать со связью
   // PERSIST не логично, т.к. company - главная сущность в этом отношении
   // странно добавлять company к пользователю, пока компания не существует
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY /*cascade = CascadeType.ALL*/)
   @JoinColumn(name = "company_id")
   private Company company;
 

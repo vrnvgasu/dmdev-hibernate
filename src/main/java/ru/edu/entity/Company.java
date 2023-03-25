@@ -33,7 +33,8 @@ public class Company {
   private String name;
 
   // если есть @ManyToOne у дочерней сущности, то можем просто указать mappedBy
-  @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+  // orphanRemoval - что делать с сущностью на уровне БД, если удалим ее из коллекции users на уровне java
+  @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
   // можем указывать колонку в дочерней сущности явно, если нет mappedBy
 //  @JoinColumn(name = "company_id")
   @Builder.Default // чтобы установить дефолтное значение из поле при использовании билдера

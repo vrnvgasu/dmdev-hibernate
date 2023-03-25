@@ -27,6 +27,22 @@ import ru.edu.util.HibernateUtil;
 public class HibernateRunnerTest {
 
   @Test
+  void checkOrhanRemoval() {
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+
+      session.beginTransaction();
+
+      Company company = session.getReference(Company.class, 1);
+      // удалит пользователя при удалении из коллекции,
+      // если есть  @OneToMany(mappedBy = "company", orphanRemoval = true)
+      company.getUsers().removeIf(user -> user.getId().equals(4L));
+
+      session.getTransaction().commit();
+    }
+  }
+
+  @Test
   void checkLazyInitialization() {
     Company company = null;
     try (var sessionFactory = HibernateUtil.buildSessionFactory();
