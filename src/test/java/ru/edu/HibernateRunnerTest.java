@@ -27,6 +27,29 @@ import ru.edu.util.HibernateUtil;
 public class HibernateRunnerTest {
 
   @Test
+  void checkLazyInitialization() {
+    Company company = null;
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+
+      session.beginTransaction();
+
+      // Получили объект из сессии
+      // getReference - возвращает объект прокси
+      // вызов прокси не сделает запрос в БД, пока прокси не проинициализиется
+      company = session.getReference(Company.class, 1);
+
+      session.getTransaction().commit();
+    }
+
+//    var users = company.getUsers();
+    // словим LazyInitializationException
+    // в обертке persistence коллекции есть сессия, которая сделает запрос к БД,
+    // но сессия уже закрыта выше
+//    System.out.println(users.size());
+  }
+
+  @Test
   void addUserToNewCompany() {
     @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
     @Cleanup var session = sessionFactory.openSession();
@@ -68,7 +91,7 @@ public class HibernateRunnerTest {
   }
 
   @Test
-  // Тест не рабочий. Это совсем упрощенный пример, как работает hibernate
+    // Тест не рабочий. Это совсем упрощенный пример, как работает hibernate
     // session.get(User.class, "test5@test.ru")
   void checkGetReflectionAPI()
     throws SQLException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
@@ -87,7 +110,7 @@ public class HibernateRunnerTest {
   }
 
   @Test
-  // Пример, как работает Hibernate через рефлексию
+    // Пример, как работает Hibernate через рефлексию
   void checkReflectionAPI() {
     User user = User.builder()
       .username("test6@test.ru")
