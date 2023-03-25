@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import lombok.Cleanup;
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
@@ -33,6 +34,9 @@ public class HibernateRunnerTest {
     session.beginTransaction();
 
     Company company = session.get(Company.class, 3);
+    // можем просто подтянуть коллекцию отношение, но на практике странно выглядит
+    Hibernate.initialize(company.getUsers());
+
     session.delete(company);
 
 //    Company company = Company.builder()
