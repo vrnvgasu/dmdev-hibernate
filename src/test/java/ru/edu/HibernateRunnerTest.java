@@ -21,10 +21,47 @@ import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
+import ru.edu.entity.Profile;
 import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
+
+  @Test
+  void checkOneToOne() {
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+
+      session.beginTransaction();
+
+      User user = session.get(User.class, 6L);
+      System.out.println();
+
+//      var user = User.builder()
+//        .username("checkOneToOne@gmail.com")
+//        .build();
+//      var profile = Profile.builder()
+//        .language("ru")
+//        .street("some street")
+//        .build();
+//
+//      session.save(user);
+//      // приходится сначала сохранить user, а только потом задавать user_id в profile
+//      profile.setUser(user);
+//
+//      // можем не сохранять profile явно, если поставить у User CascadeType.ALL
+//      // а в profile.setUser задавать связь  user.setProfile(this);
+//      //session.save(profile);
+//
+//      // тогда будет:
+//      // 1. insert users при session.save(user);
+//      // 2. profile.setUser(user); в нем user.setProfile(this);
+//      // 2.1. select profile
+//      // 2.2. не найдет в БД profile и делать insert profile
+//
+//      session.getTransaction().commit();
+    }
+  }
 
   @Test
   void checkOrhanRemoval() {

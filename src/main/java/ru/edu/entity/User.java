@@ -22,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -46,7 +47,7 @@ import ru.edu.converter.BirthdateConverter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = "company") // не делать select при отображении связи
+@ToString(exclude = {"company", "profile"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
@@ -78,5 +79,8 @@ public class User {
   @ManyToOne(fetch = FetchType.LAZY /*cascade = CascadeType.ALL*/)
   @JoinColumn(name = "company_id")
   private Company company;
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  private Profile profile;
 
 }
