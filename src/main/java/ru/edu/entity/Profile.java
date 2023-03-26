@@ -2,6 +2,9 @@ package ru.edu.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -19,24 +22,21 @@ import lombok.NoArgsConstructor;
 public class Profile {
 
   @Id
-  @Column(name = "user_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private String street;
 
   private String language;
 
-  @OneToOne
-  // можно по старинке JoinColumn
-//  @JoinColumn(name = "user_id ")
-  // а можно явно сказать, что первичный и внешний ключ в этой таблице совпадают
-  @PrimaryKeyJoinColumn
+  // LAZY сработает, тк есть колонка связи user_id
+  // сработает, если тянет profile
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   private User user;
 
   public void setUser(User user) {
     this.user = user;
-    this.id = user.getId();
-
     user.setProfile(this);
   }
 

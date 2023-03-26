@@ -34,32 +34,24 @@ public class HibernateRunnerTest {
 
       session.beginTransaction();
 
-      User user = session.get(User.class, 6L);
+//      var user = session.get(User.class, 8L);
+      var profile = session.get(Profile.class, 1L);
       System.out.println();
 
 //      var user = User.builder()
-//        .username("checkOneToOne@gmail.com")
+//        .username("checkOneToOne2@gmail.com")
 //        .build();
 //      var profile = Profile.builder()
-//        .language("ru")
-//        .street("some street")
+//        .language("ru2")
+//        .street("some street2")
 //        .build();
-//
-//      session.save(user);
-//      // приходится сначала сохранить user, а только потом задавать user_id в profile
+//      // можем сразу задавать user в profile, т.к. это не id в profile, а отдельное поле
 //      profile.setUser(user);
 //
+//      session.save(user);
 //      // можем не сохранять profile явно, если поставить у User CascadeType.ALL
-//      // а в profile.setUser задавать связь  user.setProfile(this);
-//      //session.save(profile);
-//
-//      // тогда будет:
-//      // 1. insert users при session.save(user);
-//      // 2. profile.setUser(user); в нем user.setProfile(this);
-//      // 2.1. select profile
-//      // 2.2. не найдет в БД profile и делать insert profile
-//
-//      session.getTransaction().commit();
+
+      session.getTransaction().commit();
     }
   }
 
