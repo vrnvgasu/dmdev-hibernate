@@ -4,8 +4,10 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -98,6 +100,7 @@ public class User {
 
   @Builder.Default // чтобы при создании через Builder применился new HashSet<>()
   @OneToMany(mappedBy = "user")
-  private Set<UserChat> userChats = new HashSet<>();
+  // List не делает доп запросы перед insert (в отличие от Set)
+  private List<UserChat> userChats = new ArrayList<>();
 
 }

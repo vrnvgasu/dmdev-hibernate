@@ -1,6 +1,8 @@
 package ru.edu.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +36,7 @@ public class Chat {
 
 	@Builder.Default // чтобы при создании через Builder применился new HashSet<>()
 	@OneToMany(mappedBy = "chat")
-	private Set<UserChat> userChats = new HashSet<>();
+	// List не делает доп запросы перед insert (в отличие от Set)
+	private List<UserChat> userChats = new ArrayList<>();
 
 }
