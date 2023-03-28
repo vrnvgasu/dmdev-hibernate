@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
@@ -21,6 +23,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -32,6 +36,7 @@ import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnTransformer;
@@ -47,8 +52,9 @@ import ru.edu.converter.BirthdateConverter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"company", "profile"}) // не делать select при отображении связи
+@ToString(exclude = {"company", "profile", "chats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
+@EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
 public class User {
@@ -88,5 +94,17 @@ public class User {
 //    optional = false
   )
   private Profile profile;
+
+  @Builder.Default // чтобы при создании через Builder применился new HashSet<>()
+  @ManyToMany()
+  @JoinTable(name = "users_chat",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "chat_id"))
+  private Set<Chat> chats = new HashSet<>();
+
+  public void addChat(Chat chat) {
+    chats.add(chat);
+    chat.getUsers().add(this);
+  }
 
 }

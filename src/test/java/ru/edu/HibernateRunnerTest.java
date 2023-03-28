@@ -19,6 +19,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
+import ru.edu.entity.Chat;
 import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
@@ -26,6 +27,28 @@ import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
+
+  @Test
+  void checkManyToMany() {
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+      session.beginTransaction();
+
+      // странно, что делает select users, потом select chat. Как-то не производительно
+      var user = session.get(User.class, 8L);
+
+      // очистит промежуточную таблицу
+      user.getChats().clear();
+
+//      Chat chat = Chat.builder()
+//        .name("chat_2")
+//        .build();
+//      user.addChat(chat);
+//      session.save(chat);
+
+      session.getTransaction().commit();
+    }
+  }
 
   @Test
   void checkOneToOne() {
