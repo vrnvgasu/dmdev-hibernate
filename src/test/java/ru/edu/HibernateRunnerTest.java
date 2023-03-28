@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import ru.edu.entity.Company;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
 import ru.edu.entity.User;
+import ru.edu.entity.UserChat;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
@@ -34,17 +36,17 @@ public class HibernateRunnerTest {
       var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
-      // странно, что делает select users, потом select chat. Как-то не производительно
       var user = session.get(User.class, 8L);
+      var chat = session.get(Chat.class, 1L);
 
-      // очистит промежуточную таблицу
-      user.getChats().clear();
+      UserChat userChat = UserChat.builder()
+        .createdAt(Instant.now())
+        .createdBy(user.getUsername())
+        .build();
+      userChat.setUser(user);
+      userChat.setChat(chat);
 
-//      Chat chat = Chat.builder()
-//        .name("chat_2")
-//        .build();
-//      user.addChat(chat);
-//      session.save(chat);
+      session.save(userChat);
 
       session.getTransaction().commit();
     }

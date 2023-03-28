@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -52,7 +53,7 @@ import ru.edu.converter.BirthdateConverter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"company", "profile", "chats"}) // не делать select при отображении связи
+@ToString(exclude = {"company", "profile", "userChats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public")
@@ -96,15 +97,7 @@ public class User {
   private Profile profile;
 
   @Builder.Default // чтобы при создании через Builder применился new HashSet<>()
-  @ManyToMany()
-  @JoinTable(name = "users_chat",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "chat_id"))
-  private Set<Chat> chats = new HashSet<>();
-
-  public void addChat(Chat chat) {
-    chats.add(chat);
-    chat.getUsers().add(this);
-  }
+  @OneToMany(mappedBy = "user")
+  private Set<UserChat> userChats = new HashSet<>();
 
 }

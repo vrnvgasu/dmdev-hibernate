@@ -21,5 +21,6 @@
     <mapping class="ru.edu.entity.Company"/>
     <mapping class="ru.edu.entity.Profile"/>
     <mapping class="ru.edu.entity.Chat"/>
+    <mapping class="ru.edu.entity.UserChat"/>
   </session-factory>
 </hibernate-configuration>

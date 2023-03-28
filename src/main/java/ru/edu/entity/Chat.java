@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "name") // сравнение только по name
-@ToString(exclude = "users")
+@ToString(exclude = "userChats")
 @Entity
 public class Chat {
 
@@ -31,9 +32,8 @@ public class Chat {
 	@Column(nullable = false, unique = true)
 	private String name;
 
-	@ManyToMany(mappedBy = "chats")
-	// если mappedBy, то users только READ_ONLY
 	@Builder.Default // чтобы при создании через Builder применился new HashSet<>()
-	private Set<User> users = new HashSet<>();
+	@OneToMany(mappedBy = "chat")
+	private Set<UserChat> userChats = new HashSet<>();
 
 }
