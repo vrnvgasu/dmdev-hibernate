@@ -60,7 +60,7 @@ import ru.edu.converter.BirthdateConverter;
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-public class User {
+public class User implements Comparable<User> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,5 +102,11 @@ public class User {
   @OneToMany(mappedBy = "user")
   // List не делает доп запросы перед insert (в отличие от Set)
   private List<UserChat> userChats = new ArrayList<>();
+
+  @Override
+  public int compareTo(User user) {
+    // сделаем сортировку по username
+    return username.compareTo(user.username);
+  }
 
 }
