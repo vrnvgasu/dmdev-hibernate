@@ -1,9 +1,14 @@
 package ru.edu.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,6 +44,20 @@ public class Company {
 //  @JoinColumn(name = "company_id")
   @Builder.Default // чтобы установить дефолтное значение из поле при использовании билдера
   private Set<User> users = new HashSet<>(); // new HashSet - чтобы не проверять на null
+
+  @Builder.Default
+  @ElementCollection // подключает embeddable класс в коллекцию
+  // указываем таблицу и внешний ключ в ней
+  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
+  @AttributeOverride(name = "language", column = @Column(name = "lang"))
+  private List<LocaleInfo> locales = new ArrayList<>();
+
+  @Builder.Default
+  @ElementCollection
+  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
+  @Column(name = "description")
+  // используем одно поле из таблицы справочника (только на чтение)
+  private List<String> localeDescriptions = new ArrayList<>();
 
   public void addUser(User user) {
     users.add(user);

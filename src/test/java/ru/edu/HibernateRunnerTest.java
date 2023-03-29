@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Chat;
 import ru.edu.entity.Company;
+import ru.edu.entity.LocaleInfo;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
 import ru.edu.entity.User;
@@ -29,6 +30,22 @@ import ru.edu.entity.UserChat;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
+
+  @Test
+  void localeInfo() {
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+      session.beginTransaction();
+
+      // select company
+      var company = session.get(Company.class, 1);
+      // select company_locale и 2 insert company_locale
+      company.getLocales().add(LocaleInfo.of("ru", "На русском"));
+      company.getLocales().add(LocaleInfo.of("en", "In English"));
+
+      session.getTransaction().commit();
+    }
+  }
 
   @Test
   void checkManyToMany() {
