@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+  "-//Hibernate/Hibernate Configuration DTD//EN"
+  "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <!--минимальные настройки-->
+    <!--in memory-->
+    <property name="connection.url">jdbc:h2:mem:db_dmdev_hibernate</property>
+    <property name="connection.username"/>
+    <property name="connection.password"/>
+    <property name="connection.driver_class">org.h2.Driver</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
+    <!--был би liquibase, то схема бд бы накатывалась каждый раз.
+    А так будем генерировать схему из аннотаций сущностей-->
+    <property name="hibernate.hbm2ddl.auto">create-drop</property>
+
+    <!--Вспомогательно для разработки-->
+    <property name="show_sql">true</property>
+    <property name="format_sql">true</property>
+
+    <!--Указываем сущности-->
+    <mapping class="ru.edu.entity.User"/>
+    <mapping class="ru.edu.entity.Company"/>
+    <mapping class="ru.edu.entity.Profile"/>
+    <mapping class="ru.edu.entity.Chat"/>
+    <mapping class="ru.edu.entity.UserChat"/>
+  </session-factory>
+</hibernate-configuration>

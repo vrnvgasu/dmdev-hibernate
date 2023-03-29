@@ -32,6 +32,22 @@ import ru.edu.util.HibernateUtil;
 public class HibernateRunnerTest {
 
   @Test
+  void checkH2() {
+    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+      session.beginTransaction();
+
+
+      var company = Company.builder()
+        .name("test")
+        .build();
+      session.save(company);
+
+      session.getTransaction().commit();
+    }
+  }
+
+  @Test
   void localeInfo() {
     try (var sessionFactory = HibernateUtil.buildSessionFactory();
       var session = sessionFactory.openSession()) {
