@@ -38,7 +38,8 @@ public class HibernateRunnerTest {
       session.beginTransaction();
 
       var company = session.get(Company.class, 1);
-      company.getUsers().forEach(System.out::println);
+//      company.getUsers().forEach((k, v) -> System.out.println(v));
+      company.getLocaleDescriptions().forEach((k, v) -> System.out.println(v));
 
       session.getTransaction().commit();
     }
@@ -104,7 +105,7 @@ public class HibernateRunnerTest {
       Company company = session.getReference(Company.class, 1);
       // удалит пользователя при удалении из коллекции,
       // если есть  @OneToMany(mappedBy = "company", orphanRemoval = true)
-      company.getUsers().removeIf(user -> user.getId().equals(4L));
+//      company.getUsers().removeIf(user -> user.getId().equals(4L));
 
       session.getTransaction().commit();
     }
