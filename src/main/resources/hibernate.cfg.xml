@@ -22,5 +22,7 @@
     <mapping class="ru.edu.entity.Profile"/>
     <mapping class="ru.edu.entity.Chat"/>
     <mapping class="ru.edu.entity.UserChat"/>
+    <mapping class="ru.edu.entity.Programmer"/>
+    <mapping class="ru.edu.entity.Manager"/>
   </session-factory>
 </hibernate-configuration>

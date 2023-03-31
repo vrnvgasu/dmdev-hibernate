@@ -22,9 +22,12 @@ import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Chat;
 import ru.edu.entity.Company;
+import ru.edu.entity.Language;
 import ru.edu.entity.LocaleInfo;
+import ru.edu.entity.Manager;
 import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
+import ru.edu.entity.Programmer;
 import ru.edu.entity.User;
 import ru.edu.entity.UserChat;
 import ru.edu.util.HibernateTestUtil;
@@ -38,11 +41,36 @@ public class HibernateRunnerTest {
       var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
+      // Сразу получаем ошибоку
+      //Cannot use identity column key generation with <union-subclass> mapping for: ru.edu.entity.User
 
-      var company = Company.builder()
-        .name("test")
+      var google = Company.builder()
+        .name("google")
         .build();
-      session.save(company);
+      session.save(google);
+
+      var programmer = Programmer.builder()
+        .username("programmer@programmer.com")
+        .language(Language.JAVA)
+        .company(google)
+        .build();
+      session.save(programmer);
+      var manager = Manager.builder()
+        .username("manager@manager.com")
+        .projectName("new")
+        .company(google)
+        .build();
+      session.save(manager);
+
+      session.flush();
+      session.clear();
+
+      // Получается, что у нас 2 таблицы. В первую сохранили с id=1
+      // во вторую с id=2
+      var programmer1 = session.get(Programmer.class, 1L);
+      // тут вообще прикол. User - общая сущность для программистов и менеджеров
+      // hibernate не знает, где конкретно запись с id=2 и делает select unit на 2 таблицы
+      var manager1 = session.get(User.class, 2L);
 
       session.getTransaction().commit();
     }
@@ -64,21 +92,29 @@ public class HibernateRunnerTest {
 
   @Test
   void checkManyToMany() {
-    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
       var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
-      var user = session.get(User.class, 8L);
-      var chat = session.get(Chat.class, 1L);
-
-      UserChat userChat = UserChat.builder()
+//      var user = User.builder()
+//        .username("user1")
+//        .build();
+//      var chat = Chat.builder()
+//        .name("chat1")
+//        .build();
+//      session.save(user);
+//      session.save(chat);
+//
+//      UserChat userChat = UserChat.builder()
 //        .createdAt(Instant.now())
 //        .createdBy(user.getUsername())
-        .build();
-      userChat.setUser(user);
-      userChat.setChat(chat);
+//        .build();
+//      userChat.setUser(user);
+//      userChat.setChat(chat);
 
-      session.save(userChat);
+//      session.save(userChat);
+//
+//      System.out.println(session.get(UserChat.class, userChat.getId()));
 
       session.getTransaction().commit();
     }
@@ -211,76 +247,76 @@ public class HibernateRunnerTest {
     userNameField.set(user, resultSet.getString("username"));
   }
 
-  @Test
-    // Пример, как работает Hibernate через рефлексию
-  void checkReflectionAPI() {
-    User user = User.builder()
-      .username("test6@test.ru")
-      .personalInfo(PersonalInfo.builder()
-        .firstname("ivan")
-        .personalLastname("ivanov")
-        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
-        .build())
-      .build();
-
-    String sql = """
-      insert
-          into
-          %s
-          (%s)
-          values
-          (%s)
-      """;
-    // через рефлексию из аннотации Table получаем название вида public.users (если указывали)
-    // или User (если не указывали)
-    String tableName = Optional.ofNullable(user.getClass().getAnnotation(Table.class))
-      .map(tableAnnotation -> tableAnnotation.schema() + "." + tableAnnotation.name())
-      .orElse(user.getClass().getName());
-
-    Field[] declaredFields = user.getClass().getDeclaredFields();
-
-    // берем все поля объекта через рефлексию.
-    // у каждого поля берем содержимое аннотации Column или просто название поля.
-    // джойним все названия в стрингу через запятую
-    String columnNames = Arrays.stream(declaredFields)
-      .map(field -> Optional.ofNullable(field.getAnnotation(Column.class))
-        .map(Column::name)
-        .orElse(field.getName()))
-      .collect(Collectors.joining(", "));
-
-    // стога со знаками вопросов по кол-ву полей
-    String columnValues = Arrays.stream(declaredFields)
-      .map(field -> "?")
-      .collect(Collectors.joining(", "));
-
-    sql = sql.formatted(tableName, columnNames, columnValues);
-    /* получили такой замечательный запрос
-    insert
-      into
-    public.users
-      (username, firstname, lastname, birth_date, age)
-    values
-      (?, ?, ?, ?, ?)*/
-    System.out.println(sql);
-
-    /////////// выполняем запрос ///////////
-
-    try (Connection connection = DriverManager
-      .getConnection("jdbc:postgresql://localhost:5438/db_dmdev_hibernate", "user", "qwerty")) {
-
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-      int i = 1;
-      for (Field declaredField : declaredFields) {
-        declaredField.setAccessible(true); // чтобы получить доступ к значению
-        preparedStatement.setObject(i, declaredField.get(user));
-        i++;
-      }
-
-      preparedStatement.execute();
-
-    } catch (Throwable e) {
-      System.out.println(e.getMessage());
-    }
-  }
+//  @Test
+//    // Пример, как работает Hibernate через рефлексию
+//  void checkReflectionAPI() {
+//    User user = User.builder()
+//      .username("test6@test.ru")
+//      .personalInfo(PersonalInfo.builder()
+//        .firstname("ivan")
+//        .personalLastname("ivanov")
+//        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
+//        .build())
+//      .build();
+//
+//    String sql = """
+//      insert
+//          into
+//          %s
+//          (%s)
+//          values
+//          (%s)
+//      """;
+//    // через рефлексию из аннотации Table получаем название вида public.users (если указывали)
+//    // или User (если не указывали)
+//    String tableName = Optional.ofNullable(user.getClass().getAnnotation(Table.class))
+//      .map(tableAnnotation -> tableAnnotation.schema() + "." + tableAnnotation.name())
+//      .orElse(user.getClass().getName());
+//
+//    Field[] declaredFields = user.getClass().getDeclaredFields();
+//
+//    // берем все поля объекта через рефлексию.
+//    // у каждого поля берем содержимое аннотации Column или просто название поля.
+//    // джойним все названия в стрингу через запятую
+//    String columnNames = Arrays.stream(declaredFields)
+//      .map(field -> Optional.ofNullable(field.getAnnotation(Column.class))
+//        .map(Column::name)
+//        .orElse(field.getName()))
+//      .collect(Collectors.joining(", "));
+//
+//    // стога со знаками вопросов по кол-ву полей
+//    String columnValues = Arrays.stream(declaredFields)
+//      .map(field -> "?")
+//      .collect(Collectors.joining(", "));
+//
+//    sql = sql.formatted(tableName, columnNames, columnValues);
+//    /* получили такой замечательный запрос
+//    insert
+//      into
+//    public.users
+//      (username, firstname, lastname, birth_date, age)
+//    values
+//      (?, ?, ?, ?, ?)*/
+//    System.out.println(sql);
+//
+//    /////////// выполняем запрос ///////////
+//
+//    try (Connection connection = DriverManager
+//      .getConnection("jdbc:postgresql://localhost:5438/db_dmdev_hibernate", "user", "qwerty")) {
+//
+//      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//      int i = 1;
+//      for (Field declaredField : declaredFields) {
+//        declaredField.setAccessible(true); // чтобы получить доступ к значению
+//        preparedStatement.setObject(i, declaredField.get(user));
+//        i++;
+//      }
+//
+//      preparedStatement.execute();
+//
+//    } catch (Throwable e) {
+//      System.out.println(e.getMessage());
+//    }
+//  }
 
 }

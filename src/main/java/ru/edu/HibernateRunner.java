@@ -23,22 +23,13 @@ public class HibernateRunner {
     Company company = Company.builder()
       .name("Amazon")
       .build();
-    User user = User.builder()
-      .username("ivan@gmail.ru")
-      .personalInfo(PersonalInfo.builder()
-        .firstname("ivan")
-        .personalLastname("ivanov")
-        .birthDate(new Birthday(LocalDate.of(2000, 1, 1)))
-        .build())
-      .company(company)
-      .build();
+
 
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
       Session session1 = sessionFactory.openSession();
       try (session1) {
         session1.beginTransaction();
 
-        session1.save(user);
 
         session1.getTransaction().commit();
 

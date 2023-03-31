@@ -24,6 +24,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -54,17 +56,19 @@ import ru.edu.converter.BirthdateConverter;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+//@Builder нельзя ставить для abstract
 @ToString(exclude = {"company", "profile", "userChats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 @EqualsAndHashCode(exclude = "profile")
-@Table(name = "users", schema = "public")
+//@Table(name = "users", schema = "public") лучше убрать для abstract
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-//public class User extends BaseEntity<Long> // если наследуемся от класса
-public class User implements BaseEntity<Long>, Comparable<User> {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  // по хорошему надо указать @SequenceGenerator().
+  // Но у нас схема генерится по коду, тч норм
   private Long id;
 
   @Embedded
@@ -99,7 +103,7 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   )
   private Profile profile;
 
-  @Builder.Default // чтобы при создании через Builder применился new HashSet<>()
+//  @Builder.Default нельзя ставить для abstract
   @OneToMany(mappedBy = "user")
   // List не делает доп запросы перед insert (в отличие от Set)
   private List<UserChat> userChats = new ArrayList<>();

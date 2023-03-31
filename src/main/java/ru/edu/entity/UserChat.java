@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+//@Builder
 @Entity
 @EqualsAndHashCode(exclude = {"user", "chat"})
 @Table(name = "users_chat")
@@ -28,6 +28,18 @@ public class UserChat extends AuditableEntity<Long> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  public UserChat(Instant createdAt, String createdBy) {
+    super(createdAt, createdBy);
+  }
+
+  @Builder
+  public UserChat(Long id, User user, Chat chat, Instant createdAt, String createdBy) {
+    super(createdAt, createdBy);
+    this.id = id;
+    this.user = user;
+    this.chat = chat;
+  }
 
   @ManyToOne
   @JoinColumn(name = "user_id")
