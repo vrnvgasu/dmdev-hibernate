@@ -60,7 +60,8 @@ import ru.edu.converter.BirthdateConverter;
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public")
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-public class User implements Comparable<User> {
+//public class User extends BaseEntity<Long> // если наследуемся от класса
+public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

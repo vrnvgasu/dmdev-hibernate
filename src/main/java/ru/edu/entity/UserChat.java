@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(exclude = {"user", "chat"})
 @Table(name = "users_chat")
-public class UserChat {
+public class UserChat extends AuditableEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,13 +36,6 @@ public class UserChat {
   @ManyToOne
   @JoinColumn(name = "chat_id")
   private Chat chat;
-
-  @Column(name = "created_at")
-  // java.time.Instant мапится на timestamp
-  private Instant createdAt;
-
-  @Column(name = "created_by")
-  private String createdBy;
 
   public void setUser(User user) {
     this.user = user;
