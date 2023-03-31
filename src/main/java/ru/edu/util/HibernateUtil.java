@@ -10,12 +10,20 @@ import ru.edu.converter.BirthdateConverter;
 public class HibernateUtil {
 
   public static SessionFactory buildSessionFactory() {
-    Configuration configuration = new Configuration();
+    Configuration configuration = buildConfiguration();
+
+    // подтягивает данные из hibernate.cfg.xml
     configuration.configure();
+
+    return configuration.buildSessionFactory();
+  }
+
+  public static Configuration buildConfiguration() {
+    Configuration configuration = new Configuration();
     configuration.addAttributeConverter(new BirthdateConverter());
     configuration.registerTypeOverride(new JsonBinaryType());
 
-    return configuration.buildSessionFactory();
+    return configuration;
   }
 
 }

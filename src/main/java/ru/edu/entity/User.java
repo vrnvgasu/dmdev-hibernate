@@ -59,7 +59,7 @@ import ru.edu.converter.BirthdateConverter;
 @Entity // сущность хибернейта
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public")
-//@TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
+@TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
 public class User implements Comparable<User> {
 
   @Id
@@ -79,8 +79,8 @@ public class User implements Comparable<User> {
 
   //  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
 //  @Type(type = "jsonb") // работает, т.к. в JsonBinaryType есть метод public String getName() {return "jsonb";}
-//  @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
-//  private String info;
+  @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
+  private String info;
 
   // cascade - что делать со связью
   // PERSIST не логично, т.к. company - главная сущность в этом отношении

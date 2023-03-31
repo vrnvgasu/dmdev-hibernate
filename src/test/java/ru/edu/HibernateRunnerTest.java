@@ -27,13 +27,14 @@ import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
 import ru.edu.entity.User;
 import ru.edu.entity.UserChat;
+import ru.edu.util.HibernateTestUtil;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
 
   @Test
   void checkH2() {
-    try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
       var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
