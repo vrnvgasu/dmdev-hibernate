@@ -2,6 +2,7 @@ package ru.edu.entity;
 
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,6 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+//значение для колонки type
+@DiscriminatorValue("manager")
 public class Manager extends User {
 
   @Column(name = "project_name")

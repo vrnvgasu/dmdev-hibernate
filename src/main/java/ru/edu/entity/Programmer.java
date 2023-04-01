@@ -1,6 +1,7 @@
 package ru.edu.entity;
 
 import java.util.List;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+//значение для колонки type
+@DiscriminatorValue("programmer")
 public class Programmer extends User {
 
   @Enumerated(EnumType.STRING)

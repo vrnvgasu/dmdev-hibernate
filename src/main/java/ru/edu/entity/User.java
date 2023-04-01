@@ -15,6 +15,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -60,13 +61,15 @@ import ru.edu.converter.BirthdateConverter;
 @ToString(exclude = {"company", "profile", "userChats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 @EqualsAndHashCode(exclude = "profile")
-//@Table(name = "users", schema = "public") лучше убрать для abstract
+@Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+// колонка типа (для нескольких сущностей в таблице при SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 public abstract class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   // по хорошему надо указать @SequenceGenerator().
   // Но у нас схема генерится по коду, тч норм
   private Long id;
