@@ -11,13 +11,14 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import lombok.Cleanup;
 import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
 import ru.edu.entity.Birthday;
 import ru.edu.entity.Chat;
@@ -34,6 +35,35 @@ import ru.edu.util.HibernateTestUtil;
 import ru.edu.util.HibernateUtil;
 
 public class HibernateRunnerTest {
+
+  @Test
+  void checkHql() {
+    try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
+      var session = sessionFactory.openSession()) {
+      session.beginTransaction();
+
+      // не рекомендуется через ?
+//      Query<User> query = session.createQuery("select u from User u "
+//        + "where u.personalInfo.firstname = ?1", User.class)
+//        .setParameter(1, "Ivan");
+      // рекомендуется
+      Query<User> query = session.createQuery("select u from User u "
+          + "join u.company c "
+          + "where u.personalInfo.firstname = :firstName and c.name = :companyName", User.class)
+        .setParameter("firstName", "Ivan")
+        .setParameter("companyName", "Google");
+
+      // неявный join
+      Query<User> query1 = session.createQuery("select u from User u "
+          + "where u.personalInfo.firstname = :firstName and u.company.name = :companyName", User.class)
+        .setParameter("firstName", "Ivan")
+        .setParameter("companyName", "Google");
+
+      List<User> users = query.getResultList();
+
+      session.getTransaction().commit();
+    }
+  }
 
   @Test
   void checkH2() {
