@@ -63,15 +63,11 @@ import ru.edu.converter.BirthdateConverter;
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-// колонка типа (для нескольких сущностей в таблице при SINGLE_TABLE)
-@DiscriminatorColumn(name = "type")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  // по хорошему надо указать @SequenceGenerator().
-  // Но у нас схема генерится по коду, тч норм
   private Long id;
 
   @Embedded

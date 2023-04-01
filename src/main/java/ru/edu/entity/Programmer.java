@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.PrimaryKeyJoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-//значение для колонки type
-@DiscriminatorValue("programmer")
+// наш первичный ключ является внешним ключом на User
+// при стратегии InheritanceType.JOINED
+@PrimaryKeyJoinColumn(name = "id")
 public class Programmer extends User {
 
   @Enumerated(EnumType.STRING)
