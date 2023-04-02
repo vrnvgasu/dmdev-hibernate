@@ -3,34 +3,22 @@ package ru.edu;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.persistence.Column;
-import javax.persistence.Table;
 import lombok.Cleanup;
+import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
-import ru.edu.entity.Birthday;
-import ru.edu.entity.Chat;
 import ru.edu.entity.Company;
 import ru.edu.entity.Language;
-import ru.edu.entity.LocaleInfo;
 import ru.edu.entity.Manager;
-import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.Profile;
 import ru.edu.entity.Programmer;
 import ru.edu.entity.User;
-import ru.edu.entity.UserChat;
 import ru.edu.util.HibernateTestUtil;
 import ru.edu.util.HibernateUtil;
 
@@ -59,7 +47,19 @@ public class HibernateRunnerTest {
         .setParameter("firstName", "Ivan")
         .setParameter("companyName", "Google");
 
-      List<User> users = query.getResultList();
+      Query<User> namedQuery = session.createNamedQuery("findUserByName", User.class)
+        .setParameter("firstName", "Ivan")
+        .setParameter("companyName", "Google")
+        .setFlushMode(FlushMode.AUTO)
+        .setHint(QueryHints.FETCH_SIZE, "50")
+        .setHint(QueryHints.FLUSH_MODE, "auto");
+
+      int countUpdatedRows = session.createQuery("update User u "
+          + "set u.role = 'ADMIN'").executeUpdate();
+
+      Query<User> nativeQuery = session.createNativeQuery("select u.* from users u where u.firstname = 'IVAN'", User.class);
+
+      List<User> users = namedQuery.getResultList();
 
       session.getTransaction().commit();
     }

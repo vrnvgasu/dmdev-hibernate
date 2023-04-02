@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -54,6 +55,13 @@ import ru.edu.converter.BirthdateConverter;
 // POJO: @Data, @NoArgsConstructor, @AllArgsConstructor
 // генерит пустой конструктор, геттеры, сеттеры,
 // equals и хешкод, toString
+
+
+// Можем выносить HQL запрос над сущностью. Не очень круто
+@NamedQuery(name = "findUserByName",
+  query = "select u from User u "
+    + "where u.personalInfo.firstname = :firstName and u.company.name = :companyName " +
+    "order by u.personalInfo.personalLastname desc")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -102,7 +110,7 @@ public abstract class User implements BaseEntity<Long>, Comparable<User> {
   )
   private Profile profile;
 
-//  @Builder.Default нельзя ставить для abstract
+  //  @Builder.Default нельзя ставить для abstract
   @OneToMany(mappedBy = "user")
   // List не делает доп запросы перед insert (в отличие от Set)
   private List<UserChat> userChats = new ArrayList<>();
