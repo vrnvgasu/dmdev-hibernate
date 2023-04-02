@@ -1,5 +1,6 @@
 package ru.edu.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -23,10 +24,10 @@ public class Programmer extends User {
   @Enumerated(EnumType.STRING)
   private Language language;
 
-  @Builder
+//  @Builder
   public Programmer(Long id, PersonalInfo personalInfo, String username, Role role, String info, Company company,
     Profile profile, List<UserChat> userChats, Language language) {
-    super(id, personalInfo, username, role, info, company, profile, userChats);
+    super(id, personalInfo, username, role, info, company, profile, userChats, new ArrayList<>());
     this.language = language;
   }
 

@@ -65,46 +65,46 @@ public class HibernateRunnerTest {
     }
   }
 
-  @Test
-  void checkH2() {
-    try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
-      var session = sessionFactory.openSession()) {
-      session.beginTransaction();
-
-      // Сразу получаем ошибоку
-      //Cannot use identity column key generation with <union-subclass> mapping for: ru.edu.entity.User
-
-      var google = Company.builder()
-        .name("google")
-        .build();
-      session.save(google);
-
-      var programmer = Programmer.builder()
-        .username("programmer@programmer.com")
-        .language(Language.JAVA)
-        .company(google)
-        .build();
-      session.save(programmer);
-      var manager = Manager.builder()
-        .username("manager@manager.com")
-        .projectName("new")
-        .company(google)
-        .build();
-      session.save(manager);
-
-      session.flush();
-      session.clear();
-
-      // Получается, что у нас 2 таблицы. В первую сохранили с id=1
-      // во вторую с id=2
-      var programmer1 = session.get(Programmer.class, 1L);
-      // тут вообще прикол. User - общая сущность для программистов и менеджеров
-      // hibernate не знает, где конкретно запись с id=2 и делает select unit на 2 таблицы
-      var manager1 = session.get(User.class, 2L);
-
-      session.getTransaction().commit();
-    }
-  }
+//  @Test
+//  void checkH2() {
+//    try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
+//      var session = sessionFactory.openSession()) {
+//      session.beginTransaction();
+//
+//      // Сразу получаем ошибоку
+//      //Cannot use identity column key generation with <union-subclass> mapping for: ru.edu.entity.User
+//
+//      var google = Company.builder()
+//        .name("google")
+//        .build();
+//      session.save(google);
+//
+//      var programmer = Programmer.builder()
+//        .username("programmer@programmer.com")
+//        .language(Language.JAVA)
+//        .company(google)
+//        .build();
+//      session.save(programmer);
+//      var manager = Manager.builder()
+//        .username("manager@manager.com")
+//        .projectName("new")
+//        .company(google)
+//        .build();
+//      session.save(manager);
+//
+//      session.flush();
+//      session.clear();
+//
+//      // Получается, что у нас 2 таблицы. В первую сохранили с id=1
+//      // во вторую с id=2
+//      var programmer1 = session.get(Programmer.class, 1L);
+//      // тут вообще прикол. User - общая сущность для программистов и менеджеров
+//      // hibernate не знает, где конкретно запись с id=2 и делает select unit на 2 таблицы
+//      var manager1 = session.get(User.class, 2L);
+//
+//      session.getTransaction().commit();
+//    }
+//  }
 
   @Test
   void localeInfo() {

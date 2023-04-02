@@ -1,23 +1,14 @@
 package ru.edu.entity;
 
+import static ru.edu.util.StringUtils.SPACE;
+
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,29 +19,19 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import ru.edu.converter.BirthdateConverter;
 
 // POJO: @Data, @NoArgsConstructor, @AllArgsConstructor
 // генерит пустой конструктор, геттеры, сеттеры,
@@ -65,14 +46,14 @@ import ru.edu.converter.BirthdateConverter;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder нельзя ставить для abstract
+@Builder
 @ToString(exclude = {"company", "profile", "userChats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 @EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User implements BaseEntity<Long>, Comparable<User> {
+//@Inheritance(strategy = InheritanceType.JOINED)
+public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,10 +96,18 @@ public abstract class User implements BaseEntity<Long>, Comparable<User> {
   // List не делает доп запросы перед insert (в отличие от Set)
   private List<UserChat> userChats = new ArrayList<>();
 
+  @Builder.Default
+  @OneToMany(mappedBy = "receiver")
+  private List<Payment> payments = new ArrayList<>();
+
   @Override
   public int compareTo(User user) {
     // сделаем сортировку по username
     return username.compareTo(user.username);
+  }
+
+  public String fullName() {
+    return getPersonalInfo().getFirstname() + SPACE + getPersonalInfo().getPersonalLastname();
   }
 
 }

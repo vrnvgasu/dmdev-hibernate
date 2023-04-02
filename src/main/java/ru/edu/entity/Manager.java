@@ -1,5 +1,6 @@
 package ru.edu.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -24,10 +25,10 @@ public class Manager extends User {
   @Column(name = "project_name")
   private String projectName;
 
-  @Builder
+//  @Builder
   public Manager(Long id, PersonalInfo personalInfo, String username, Role role, String info, Company company,
     Profile profile, List<UserChat> userChats, String projectName) {
-    super(id, personalInfo, username, role, info, company, profile, userChats);
+    super(id, personalInfo, username, role, info, company, profile, userChats, new ArrayList<>());
     this.projectName = projectName;
   }
 
