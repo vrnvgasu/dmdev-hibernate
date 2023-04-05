@@ -1,8 +1,13 @@
 package ru.edu.dao;
 
+import static ru.edu.entity.QCompany.company;
+import static ru.edu.entity.QPayment.payment;
+import static ru.edu.entity.QUser.user;
+
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
@@ -16,6 +21,10 @@ import ru.edu.entity.Payment;
 import ru.edu.entity.Payment_;
 import ru.edu.entity.PersonalInfo_;
 import ru.edu.entity.Profile_;
+import ru.edu.entity.QCompany;
+import ru.edu.entity.QPayment;
+import ru.edu.entity.QPersonalInfo;
+import ru.edu.entity.QUser;
 import ru.edu.entity.User;
 import ru.edu.entity.User_;
 
@@ -30,16 +39,24 @@ public class UserDao {
 //    return session.createQuery("select u from User u", User.class)
 //      .list();
 
-    CriteriaBuilder cb = session.getCriteriaBuilder();
-    // что возвращаем из запроса. Аналог второго параметра в session.createQuery
-    CriteriaQuery<User> criteria = cb.createQuery(User.class);
-    // from User u
-    Root<User> user = criteria.from(User.class);
-    // select u
-    criteria.select(user);
+//    CriteriaBuilder cb = session.getCriteriaBuilder();
+//    // что возвращаем из запроса. Аналог второго параметра в session.createQuery
+//    CriteriaQuery<User> criteria = cb.createQuery(User.class);
+//    // from User u
+//    Root<User> user = criteria.from(User.class);
+//    // select u
+//    criteria.select(user);
+//
+//    return session.createQuery(criteria)
+//      .list();
 
-    return session.createQuery(criteria)
-      .list();
+    // в конструктор надо передать EntityManager. Session как раз его реализует
+    // User - что в итоге получим из запроса
+    return new JPAQuery<User>(session)
+      // QUser.user - сгенерирован apt-maven-plugin
+      .select(user) // select u
+      .from(user) // from User u
+      .fetch(); // list()
   }
 
   /**
@@ -51,20 +68,26 @@ public class UserDao {
 //      .setParameter("firstName", firstName)
 //      .list();
 
-    CriteriaBuilder cb = session.getCriteriaBuilder();
-    // что возвращаем из запроса. Аналог второго параметра в session.createQuery
-    CriteriaQuery<User> criteria = cb.createQuery(User.class);
-    // from User u
-    var user = criteria.from(User.class);
-    // select u
-    criteria.select(user)
-      // where
-      .where(
-        //  u.personalInfo.firstname = :firstName
-        cb.equal(user.get(User_.personalInfo).get(PersonalInfo_.firstname), firstName));
-    // User_.personalInfo - генерит библиотека hibernate-jpamodelgen
+//    CriteriaBuilder cb = session.getCriteriaBuilder();
+//    // что возвращаем из запроса. Аналог второго параметра в session.createQuery
+//    CriteriaQuery<User> criteria = cb.createQuery(User.class);
+//    // from User u
+//    var user = criteria.from(User.class);
+//    // select u
+//    criteria.select(user)
+//      // where
+//      .where(
+//        //  u.personalInfo.firstname = :firstName
+//        cb.equal(user.get(User_.personalInfo).get(PersonalInfo_.firstname), firstName));
+//    // User_.personalInfo - генерит библиотека hibernate-jpamodelgen
+//
+//    return session.createQuery(criteria).list();
 
-    return session.createQuery(criteria).list();
+    return new JPAQuery<User>(session)
+      .select(user)
+      .from(user)
+      .where(user.personalInfo.firstname.eq(firstName))
+      .fetch();
   }
 
   /**
@@ -75,19 +98,26 @@ public class UserDao {
 //      .setMaxResults(limit)
 //      .list();
 
-    var cb = session.getCriteriaBuilder();
-    var criteria = cb.createQuery(User.class);
-    var user = criteria.from(User.class);
-    criteria.select(user)
-      // order by
-      .orderBy(
-        // by u.personalInfo.birthDate
-        cb.asc(user.get(User_.personalInfo).get(PersonalInfo_.birthDate))
-      );
+//    var cb = session.getCriteriaBuilder();
+//    var criteria = cb.createQuery(User.class);
+//    var user = criteria.from(User.class);
+//    criteria.select(user)
+//      // order by
+//      .orderBy(
+//        // by u.personalInfo.birthDate
+//        cb.asc(user.get(User_.personalInfo).get(PersonalInfo_.birthDate))
+//      );
+//
+//    return session.createQuery(criteria)
+//      .setMaxResults(limit) // limit как и при HQL
+//      .list();
 
-    return session.createQuery(criteria)
-      .setMaxResults(limit) // limit как и при HQL
-      .list();
+    return new JPAQuery<User>(session)
+      .select(user)
+      .from(user)
+      .orderBy(user.personalInfo.birthDate.asc())
+      .limit(limit)
+      .fetch();
   }
 
   /**
@@ -100,21 +130,28 @@ public class UserDao {
 //      .setParameter("companyName", companyName)
 //      .list();
 
-    var cb = session.getCriteriaBuilder();
-    var criteria = cb.createQuery(User.class);
-    //from Company c
-    var company = criteria.from(Company.class);
-    //join c.users u
-    var users = company.join(Company_.users);
-    // select u
-    criteria.select(users)
-      //where
-      .where(
-        //c.name = :companyName
-        cb.equal(company.get(Company_.name), companyName)
-      );
+//    var cb = session.getCriteriaBuilder();
+//    var criteria = cb.createQuery(User.class);
+//    //from Company c
+//    var company = criteria.from(Company.class);
+//    //join c.users u
+//    var users = company.join(Company_.users);
+//    // select u
+//    criteria.select(users)
+//      //where
+//      .where(
+//        //c.name = :companyName
+//        cb.equal(company.get(Company_.name), companyName)
+//      );
+//
+//    return session.createQuery(criteria).list();
 
-    return session.createQuery(criteria).list();
+    return new JPAQuery<User>(session)
+      .select(user)
+      .from(company)
+      .join(company.users, user)
+      .where(company.name.eq(companyName))
+      .fetch();
   }
 
   /**
@@ -130,21 +167,30 @@ public class UserDao {
 //      .setParameter("companyName", companyName)
 //      .list();
 
-    var cb = session.getCriteriaBuilder();
-    var criteria = cb.createQuery(Payment.class);
+//    var cb = session.getCriteriaBuilder();
+//    var criteria = cb.createQuery(Payment.class);
+//
+//    var payment = criteria.from(Payment.class);
+//    var receiver = payment.join(Payment_.receiver);
+//    var company = receiver.join(User_.company);
+//
+//    criteria.select(payment)
+//      .where(cb.equal(company.get(Company_.name), companyName))
+//      .orderBy(
+//        cb.asc(receiver.get(User_.personalInfo).get(PersonalInfo_.firstname)),
+//        cb.asc(payment.get(Payment_.amount))
+//      );
+//
+//    return session.createQuery(criteria).list();
 
-    var payment = criteria.from(Payment.class);
-    var receiver = payment.join(Payment_.receiver);
-    var company = receiver.join(User_.company);
-
-    criteria.select(payment)
-      .where(cb.equal(company.get(Company_.name), companyName))
-      .orderBy(
-        cb.asc(receiver.get(User_.personalInfo).get(PersonalInfo_.firstname)),
-        cb.asc(payment.get(Payment_.amount))
-      );
-
-    return session.createQuery(criteria).list();
+    return new JPAQuery<Payment>(session)
+      .select(payment)
+      .from(payment)
+      .join(payment.receiver, user)
+      .join(payment.receiver.company, company)
+      .where(company.name.eq(companyName))
+      .orderBy(user.personalInfo.firstname.asc(), payment.amount.asc())
+      .fetch();
   }
 
   /**
@@ -159,31 +205,39 @@ public class UserDao {
 //      .setParameter("lastName", lastName)
 //      .uniqueResult();
 
-    var cb = session.getCriteriaBuilder();
-    var criteria = cb.createQuery(Double.class);
-    var payment = criteria.from(Payment.class);
-    var receiver = payment.join(Payment_.receiver);
+//    var cb = session.getCriteriaBuilder();
+//    var criteria = cb.createQuery(Double.class);
+//    var payment = criteria.from(Payment.class);
+//    var receiver = payment.join(Payment_.receiver);
+//
+//    List<Predicate> predicates = new ArrayList<>();
+//    if (firstName != null) {
+//      predicates.add(cb.equal(receiver.get(User_.personalInfo).get(PersonalInfo_.firstname), firstName));
+//    }
+//    if (lastName != null) {
+//      predicates.add(cb.equal(receiver.get(User_.personalInfo).get(PersonalInfo_.personalLastname), lastName));
+//    }
+//
+//    //select avg(p.amount)
+//    criteria.select(cb.avg(payment.get(Payment_.amount)))
+//      // могли условия cb.equal перечислять через запятую
+//      .where(predicates.toArray(Predicate[]::new));
+//
+//    return session.createQuery(criteria).uniqueResult();
 
-    List<Predicate> predicates = new ArrayList<>();
-    if (firstName != null) {
-      predicates.add(cb.equal(receiver.get(User_.personalInfo).get(PersonalInfo_.firstname), firstName));
-    }
-    if (lastName != null) {
-      predicates.add(cb.equal(receiver.get(User_.personalInfo).get(PersonalInfo_.personalLastname), lastName));
-    }
-
-    //select avg(p.amount)
-    criteria.select(cb.avg(payment.get(Payment_.amount)))
-      // могли условия cb.equal перечислять через запятую
-      .where(predicates.toArray(Predicate[]::new));
-
-    return session.createQuery(criteria).uniqueResult();
+    return new JPAQuery<Double>(session)
+      .select(payment.amount.avg())
+      .from(payment)
+      .join(payment.receiver, user)
+      .where(user.personalInfo.firstname.eq(firstName)
+        .and(user.personalInfo.personalLastname.eq(lastName)))
+      .fetchOne();
   }
 
   /**
    * Возвращает для каждой компании: название, среднюю зарплату всех её сотрудников. Компании упорядочены по названию.
    */
-  public List<CompanyDto> findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(Session session) {
+  public List<com.querydsl.core.Tuple> findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(Session session) {
 //    return session.createQuery("select c.name, avg(p.amount) from Company c " +
 //        "join c.users u " +
 //        "join u.payments p " +
@@ -207,23 +261,33 @@ public class UserDao {
 //      .orderBy(cb.asc(company.get(Company_.name)));
 
     // вариант с DTO
-    var cb = session.getCriteriaBuilder();
-    var criteria = cb.createQuery(CompanyDto.class);
-    var company = criteria.from(Company.class);
-    // можно вторым параметром выбирать тип join
-    var user = company.join(Company_.users, JoinType.INNER);
-    var payment = user.join(User_.payments);
-    criteria.select(
-        cb.construct(
-          CompanyDto.class, // dto
-          // переменные в dto
-          company.get(Company_.name),
-          cb.avg(payment.get(Payment_.amount))
-        ))
-      .groupBy(company.get(Company_.name))
-      .orderBy(cb.asc(company.get(Company_.name)));
+//    var cb = session.getCriteriaBuilder();
+//    var criteria = cb.createQuery(CompanyDto.class);
+//    var company = criteria.from(Company.class);
+//    // можно вторым параметром выбирать тип join
+//    var user = company.join(Company_.users, JoinType.INNER);
+//    var payment = user.join(User_.payments);
+//    criteria.select(
+//        cb.construct(
+//          CompanyDto.class, // dto
+//          // переменные в dto
+//          company.get(Company_.name),
+//          cb.avg(payment.get(Payment_.amount))
+//        ))
+//      .groupBy(company.get(Company_.name))
+//      .orderBy(cb.asc(company.get(Company_.name)));
+//
+//    return session.createQuery(criteria).list();
 
-    return session.createQuery(criteria).list();
+    // К сожалению JPAQuery не умеет работать с DTO
+    return new JPAQuery<com.querydsl.core.Tuple>(session)
+      .select(company.name, payment.amount.avg())
+      .from(company)
+      .join(company.users, user)
+      .join(user.payments, payment)
+      .groupBy(company.name)
+      .orderBy(company.name.asc())
+      .fetch();
   }
 
   /**
@@ -240,31 +304,44 @@ public class UserDao {
 //      .list();
 
     // через Tuple
-    var cb = session.getCriteriaBuilder();
-    // вернем Tuple вместо Object[]
-    var criteria = cb.createQuery(Tuple.class);
-    var user = criteria.from(User.class);
-    var payment = user.join(User_.payments);
+//    var cb = session.getCriteriaBuilder();
+//    // вернем Tuple вместо Object[]
+//    var criteria = cb.createQuery(Tuple.class);
+//    var user = criteria.from(User.class);
+//    var payment = user.join(User_.payments);
+//
+//    //подзапрос
+//    var subquery = criteria.subquery(Double.class);
+//    var paymentSubquery = subquery.from(Payment.class);
+//
+//    criteria.select(
+//        cb.tuple(
+//          user,
+//          cb.avg(payment.get(Payment_.amount))
+//        )
+//      )
+//      .groupBy(user.get(User_.id))
+//      .having(cb.gt(
+//          cb.avg(payment.get(Payment_.amount)),
+//        subquery.select(cb.avg(paymentSubquery.get(Payment_.amount)))
+//        )
+//      )
+//      .orderBy(cb.asc(user.get(User_.personalInfo).get(PersonalInfo_.firstname)));
+//
+//    return session.createQuery(criteria).list();
 
-    //подзапрос
-    var subquery = criteria.subquery(Double.class);
-    var paymentSubquery = subquery.from(Payment.class);
-
-    criteria.select(
-        cb.tuple(
-          user,
-          cb.avg(payment.get(Payment_.amount))
-        )
+    return new JPAQuery<Tuple>(session)
+      .select(user, payment.amount.avg())
+      .from(user)
+      .join(user.payments, payment)
+      .groupBy(user.id)
+      .having(payment.amount.avg().gt(
+        new JPAQuery<Double>(session)
+          .select(payment.amount.avg())
+          .from(payment))
       )
-      .groupBy(user.get(User_.id))
-      .having(cb.gt(
-          cb.avg(payment.get(Payment_.amount)),
-        subquery.select(cb.avg(paymentSubquery.get(Payment_.amount)))
-        )
-      )
-      .orderBy(cb.asc(user.get(User_.personalInfo).get(PersonalInfo_.firstname)));
-
-    return session.createQuery(criteria).list();
+      .orderBy(user.personalInfo.firstname.asc())
+      .fetch();
   }
 
   public static UserDao getInstance() {

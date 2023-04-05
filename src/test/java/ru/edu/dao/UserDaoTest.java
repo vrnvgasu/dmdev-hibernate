@@ -4,8 +4,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+import com.querydsl.core.Tuple;
 import java.util.List;
-import javax.persistence.Tuple;
 import lombok.Cleanup;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -131,13 +131,13 @@ class UserDaoTest {
 //    assertThat(orgAvgPayments).contains(410.0, 400.0, 300.0);
 
 
-    List<CompanyDto> results = userDao.findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(session);
+    List<com.querydsl.core.Tuple> results = userDao.findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(session);
     assertThat(results).hasSize(3);
 
-    List<String> orgNames = results.stream().map(CompanyDto::getName).collect(toList());
+    List<String> orgNames = results.stream().map(t -> t.get(0, String.class)).collect(toList());
     assertThat(orgNames).contains("Apple", "Google", "Microsoft");
 
-    List<Double> orgAvgPayments = results.stream().map(CompanyDto::getAmount).collect(toList());
+    List<Double> orgAvgPayments = results.stream().map(t -> t.get(1, Double.class)).collect(toList());
     assertThat(orgAvgPayments).contains(410.0, 400.0, 300.0);
 
     session.getTransaction().commit();
