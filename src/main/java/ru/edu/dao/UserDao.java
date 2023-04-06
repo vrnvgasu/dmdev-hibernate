@@ -5,16 +5,17 @@ import static ru.edu.entity.QPayment.payment;
 import static ru.edu.entity.QUser.user;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import ru.edu.dto.CompanyDto;
+import ru.edu.dto.PaymentFilter;
 import ru.edu.entity.Company;
 import ru.edu.entity.Company_;
 import ru.edu.entity.Payment;
@@ -196,7 +197,7 @@ public class UserDao {
   /**
    * Возвращает среднюю зарплату сотрудника с указанными именем и фамилией
    */
-  public Double findAveragePaymentAmountByFirstAndLastNames(Session session, String firstName, String lastName) {
+  public Double findAveragePaymentAmountByFirstAndLastNames(Session session, PaymentFilter filter) {
 //    return session.createQuery("select avg(p.amount) from Payment p " +
 //        "join p.receiver u " +
 //        "where u.personalInfo.firstname = :firstName " +
@@ -225,12 +226,25 @@ public class UserDao {
 //
 //    return session.createQuery(criteria).uniqueResult();
 
+//    // динамический запрос с querydsl
+//    List<com.querydsl.core.types.Predicate> predicates = new ArrayList<>();
+//    if (filter.getFirstName() != null) {
+//      predicates.add(user.personalInfo.firstname.eq(filter.getFirstName()));
+//    }
+//    if (filter.getLastName() != null) {
+//      predicates.add(user.personalInfo.personalLastname.eq(filter.getLastName()));
+//    }
+
+    Predicate predicate = QPredicate.builder()
+      .add(filter.getFirstName(), user.personalInfo.firstname::eq)
+      .add(filter.getLastName(), user.personalInfo.personalLastname::eq)
+      .buildAnd();
+
     return new JPAQuery<Double>(session)
       .select(payment.amount.avg())
       .from(payment)
       .join(payment.receiver, user)
-      .where(user.personalInfo.firstname.eq(firstName)
-        .and(user.personalInfo.personalLastname.eq(lastName)))
+      .where(predicate)
       .fetchOne();
   }
 
