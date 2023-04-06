@@ -2,6 +2,7 @@ package ru.edu.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -27,8 +28,8 @@ public class Manager extends User {
 
 //  @Builder
   public Manager(Long id, PersonalInfo personalInfo, String username, Role role, String info, Company company,
-    Profile profile, List<UserChat> userChats, String projectName) {
-    super(id, personalInfo, username, role, info, company, profile, userChats, new ArrayList<>());
+    Profile profile, Set<UserChat> userChats, String projectName) {
+    super(id, personalInfo, username, role, info, company, /*profile, */userChats, new ArrayList<>());
     this.projectName = projectName;
   }
 

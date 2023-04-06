@@ -12,6 +12,8 @@
     <!--диалект для постгреса 10 и старше-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
 
+    <property name="hibernate.hbm2ddl.auto">validate</property>
+
     <!--Вспомогательно для разработки-->
     <property name="show_sql">true</property>
     <property name="format_sql">true</property>

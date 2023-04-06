@@ -1,13 +1,8 @@
 package ru.edu;
 
-import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import ru.edu.entity.Birthday;
-import ru.edu.entity.Company;
-import ru.edu.entity.PersonalInfo;
 import ru.edu.entity.User;
 import ru.edu.util.HibernateUtil;
 
@@ -20,22 +15,17 @@ public class HibernateRunner {
 //  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
 
   public static void main(String[] args) {
-    Company company = Company.builder()
-      .name("Amazon")
-      .build();
+    try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+      Session session = sessionFactory.openSession()) {
+      session.beginTransaction();
 
+//      var user = session.get(User.class, 1L);
+//      System.out.println(user.getPayments().size());
+//      System.out.println(user.getCompany().getName());
 
-    try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
-      Session session1 = sessionFactory.openSession();
-      try (session1) {
-        session1.beginTransaction();
+      var users = session.createQuery("select u from User u", User.class).list();
 
-
-        session1.getTransaction().commit();
-
-        // делает select на связь, при FetchType.LAZY
-//        System.out.println(userFromBD.getCompany());
-      }
+      session.getTransaction().commit();
     }
   }
 

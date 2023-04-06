@@ -2,6 +2,7 @@ package ru.edu.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -26,8 +27,8 @@ public class Programmer extends User {
 
 //  @Builder
   public Programmer(Long id, PersonalInfo personalInfo, String username, Role role, String info, Company company,
-    Profile profile, List<UserChat> userChats, Language language) {
-    super(id, personalInfo, username, role, info, company, profile, userChats, new ArrayList<>());
+    Profile profile, Set<UserChat> userChats, Language language) {
+//    super(id, personalInfo, username, role, info, company, profile, userChats, new ArrayList<>());
     this.language = language;
   }
 

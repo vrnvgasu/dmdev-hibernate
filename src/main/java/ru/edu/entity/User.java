@@ -4,7 +4,9 @@ import static ru.edu.util.StringUtils.SPACE;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,9 +49,9 @@ import org.hibernate.annotations.TypeDef;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"company", "profile", "userChats"}) // не делать select при отображении связи
+@ToString(exclude = {"company", "userChats"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
-@EqualsAndHashCode(exclude = "profile")
+//@EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
 //@Inheritance(strategy = InheritanceType.JOINED)
@@ -82,22 +84,22 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   @JoinColumn(name = "company_id")
   private Company company;
 
-  @OneToOne(
-    mappedBy = "user",
-    cascade = CascadeType.ALL,
-    // LAZY не сработает для сущности, у которой нет внешнего ключа на связь OneToOne
-    fetch = FetchType.LAZY
-//    optional = false
-  )
-  private Profile profile;
+//  @OneToOne(
+//    mappedBy = "user",
+//    cascade = CascadeType.ALL,
+//    // LAZY не сработает для сущности, у которой нет внешнего ключа на связь OneToOne
+//    fetch = FetchType.LAZY
+////    optional = false
+//  )
+//  private Profile profile;
 
   //  @Builder.Default нельзя ставить для abstract
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   // List не делает доп запросы перед insert (в отличие от Set)
-  private List<UserChat> userChats = new ArrayList<>();
+  private Set<UserChat> userChats = new HashSet<>();
 
   @Builder.Default
-  @OneToMany(mappedBy = "receiver")
+  @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
   private List<Payment> payments = new ArrayList<>();
 
   @Override
