@@ -22,7 +22,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -78,6 +81,18 @@ import org.hibernate.annotations.TypeDef;
     mode = FetchMode.JOIN // получим одним запрос с пользователем через join
   )
 })
+// тянем сразу 2 связи и одну подсвязь. Можно тянуть и связи связей при желании
+@NamedEntityGraph(
+  name = "WithCompanyAndChat",
+  attributeNodes = {
+    @NamedAttributeNode("company"),
+    // коллекцию userChats и связь этой коллекции на chat
+    @NamedAttributeNode(value = "userChats", subgraph = "withChats")
+  },
+  subgraphs = {
+    @NamedSubgraph(name = "withChats", attributeNodes = @NamedAttributeNode("chat"))
+  }
+)
 public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id

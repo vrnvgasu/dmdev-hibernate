@@ -3,6 +3,7 @@ package ru.edu.entity;
 import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Data
@@ -21,6 +23,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 //@Builder
 @Entity
+@ToString(exclude = {"user", "chat"})
 @EqualsAndHashCode(exclude = {"user", "chat"})
 @Table(name = "users_chat")
 public class UserChat extends AuditableEntity<Long> {
@@ -41,11 +44,11 @@ public class UserChat extends AuditableEntity<Long> {
     this.chat = chat;
   }
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chat_id")
   private Chat chat;
 
