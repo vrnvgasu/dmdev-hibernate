@@ -35,6 +35,7 @@ import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -57,7 +58,26 @@ import org.hibernate.annotations.TypeDef;
 //@EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
 @TypeDef(name = "outTypeName", typeClass = JsonBinaryType.class)
-//@Inheritance(strategy = InheritanceType.JOINED)
+// позволит подгружать связь company при запросе user по id
+@FetchProfile(name = "withCompany", fetchOverrides = {
+  @FetchProfile.FetchOverride(
+    entity = User.class,
+    association = "company", // название связи
+    mode = FetchMode.JOIN // получим одним запрос с пользователем через join
+  )
+})
+@FetchProfile(name = "withCompanyAndPayment", fetchOverrides = {
+  @FetchProfile.FetchOverride(
+    entity = User.class,
+    association = "company", // название связи
+    mode = FetchMode.JOIN // получим одним запрос с пользователем через join
+  ),
+  @FetchProfile.FetchOverride(
+    entity = User.class,
+    association = "payments", // название связи
+    mode = FetchMode.JOIN // получим одним запрос с пользователем через join
+  )
+})
 public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
