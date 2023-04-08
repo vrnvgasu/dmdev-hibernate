@@ -172,13 +172,14 @@ public class UserDao {
 //    var criteria = cb.createQuery(Payment.class);
 //
 //    var payment = criteria.from(Payment.class);
-//    var receiver = payment.join(Payment_.receiver);
-//    var company = receiver.join(User_.company);
+//    var user = payment.join(Payment_.receiver);
+//    payment.fetch(Payment_.receiver); // добавит users в select после вызова join
+//    var company = user.join(User_.company);
 //
 //    criteria.select(payment)
 //      .where(cb.equal(company.get(Company_.name), companyName))
 //      .orderBy(
-//        cb.asc(receiver.get(User_.personalInfo).get(PersonalInfo_.firstname)),
+//        cb.asc(user.get(User_.personalInfo).get(PersonalInfo_.firstname)),
 //        cb.asc(payment.get(Payment_.amount))
 //      );
 //
@@ -187,7 +188,8 @@ public class UserDao {
     return new JPAQuery<Payment>(session)
       .select(payment)
       .from(payment)
-      .join(payment.receiver, user)
+      // добавит users в select после вызова join
+      .join(payment.receiver, user).fetchJoin()
       .join(payment.receiver.company, company)
       .where(company.name.eq(companyName))
       .orderBy(user.personalInfo.firstname.asc(), payment.amount.asc())

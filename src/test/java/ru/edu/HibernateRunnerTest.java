@@ -114,7 +114,7 @@ public class HibernateRunnerTest {
 
       var company = session.get(Company.class, 1);
 //      company.getUsers().forEach((k, v) -> System.out.println(v));
-      company.getLocaleDescriptions().forEach((k, v) -> System.out.println(v));
+//      company.getLocaleDescriptions().forEach((k, v) -> System.out.println(v));
 
       session.getTransaction().commit();
     }

@@ -30,7 +30,7 @@ public class Payment {
   @Column(nullable = false)
   private Integer amount;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "receiver_id")
   private User receiver;
 
