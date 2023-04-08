@@ -32,6 +32,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -81,6 +82,7 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   // PERSIST не логично, т.к. company - главная сущность в этом отношении
   // странно добавлять company к пользователю, пока компания не существует
   @ManyToOne(fetch = FetchType.LAZY /*cascade = CascadeType.ALL*/)
+//  @BatchSize(size = 3) // для ManyToOne не работает
   @JoinColumn(name = "company_id")
   private Company company;
 
@@ -99,6 +101,7 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   private Set<UserChat> userChats = new HashSet<>();
 
   @Builder.Default
+  @BatchSize(size = 3)
   @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
   private List<Payment> payments = new ArrayList<>();
 

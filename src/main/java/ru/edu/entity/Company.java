@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.SortNatural;
 
@@ -39,6 +40,7 @@ import org.hibernate.annotations.SortNatural;
 @ToString(exclude = "users")
 @EqualsAndHashCode(exclude = "users")
 @Entity
+@BatchSize(size = 3) // подтянет связь на Company при вызове из дочерних связей
 public class Company {
 
   @Id
