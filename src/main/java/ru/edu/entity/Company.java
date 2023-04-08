@@ -40,7 +40,7 @@ import org.hibernate.annotations.SortNatural;
 @ToString(exclude = "users")
 @EqualsAndHashCode(exclude = "users")
 @Entity
-@BatchSize(size = 3) // подтянет связь на Company при вызове из дочерних связей
+//@BatchSize(size = 3) // подтянет связь на Company при вызове из дочерних связей
 public class Company {
 
   @Id
@@ -55,20 +55,20 @@ public class Company {
   @SortNatural
   private Map<String, User> users = new TreeMap<>();
 
-  @Builder.Default
-  @ElementCollection // подключает embeddable класс в коллекцию
-  // указываем таблицу и внешний ключ в ней
-  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
-  @AttributeOverride(name = "language", column = @Column(name = "lang"))
-  private List<LocaleInfo> locales = new ArrayList<>();
+//  @Builder.Default
+//  @ElementCollection // подключает embeddable класс в коллекцию
+//  // указываем таблицу и внешний ключ в ней
+//  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
+//  @AttributeOverride(name = "language", column = @Column(name = "lang"))
+//  private List<LocaleInfo> locales = new ArrayList<>();
 
-  @Builder.Default
-  @ElementCollection
-  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
-  @Column(name = "description")
-  @MapKeyColumn(name = "lang")
-  // используем одно поле из таблицы справочника (только на чтение)
-  private Map<String, String> localeDescriptions = new HashMap<>();
+//  @Builder.Default
+//  @ElementCollection
+//  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
+//  @Column(name = "description")
+//  @MapKeyColumn(name = "lang")
+//  // используем одно поле из таблицы справочника (только на чтение)
+//  private Map<String, String> localeDescriptions = new HashMap<>();
 
   public void addUser(User user) {
     users.put(user.getUsername(), user);
