@@ -1,12 +1,18 @@
 package ru.edu;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.graph.GraphSemantic;
 import org.hibernate.graph.RootGraph;
 import org.hibernate.graph.SubGraph;
+import org.hibernate.jdbc.Work;
+import ru.edu.entity.Payment;
 import ru.edu.entity.User;
 import ru.edu.entity.UserChat;
 import ru.edu.util.HibernateUtil;
@@ -14,39 +20,33 @@ import ru.edu.util.HibernateUtil;
 @Slf4j// генерит строку private static final Logger log
 public class HibernateRunner {
 
-  // выбираем org.slf4j.Logger
-  // HibernateRunner.class будет передаваться в %c в конфиг логгера
-  // можно заменить аннотацией @Slf4j
-//  private static final Logger log = LoggerFactory.getLogger(HibernateRunner.class);
-
+  @Transactional
+  // Transactional - из JPA. Тут реализация должна открыть сессию, обернуть транзакцию в try
+  // откатить транзакцию при ошибке. НО... hibernate это не реализует.
+  // НО... в спринге это реализовано (такой класс с Transactional
+  //   просто оборачивается в прокси с нужными методами)
   public static void main(String[] args) {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
       Session session = sessionFactory.openSession()) {
-      session.beginTransaction();
+      session.doWork(new Work() {
+        @Override
+        public void execute(Connection connection) throws SQLException {
+          System.out.println(connection.getTransactionIsolation());
+        }
+      });
+      // тоже через lambda
+      session.doWork(connection -> System.out.println(connection.getTransactionIsolation()));
 
-//      session.enableFetchProfile("withCompanyAndPayment");
+      Transaction transaction = session.beginTransaction();
+      try {
+//        var payment = session.find(Payment.class, 1L);
 
-      // написали по быстрому граф вместо огромной аннотации @NamedEntityGraph
-      RootGraph<User> userGraph = session.createEntityGraph(User.class);
-      userGraph.addAttributeNodes("company", "userChats");
-      SubGraph<UserChat> userChatSubGraph = userGraph.addSubgraph("userChats", UserChat.class);
-      userChatSubGraph.addAttributeNodes("chat");
-
-//      RootGraph<?> graph = session.getEntityGraph("WithCompanyAndChat");
-
-      //var user = session.get(User.class, 1L); get не подходит для графа. Вместо него find
-      Map<String, Object> properties = Map.of(GraphSemantic.LOAD.getJpaHintName(), userGraph);
-      var user = session.find(User.class, 1L, properties);
-      System.out.println(user.getUserChats().size());
-      System.out.println(user.getCompany().getName());
-
-      var users = session.createQuery("select u from User u", User.class)
-        .setHint(GraphSemantic.LOAD.getJpaHintName(), userGraph)
-        .list();
-      users.forEach(u -> System.out.println(u.getCompany()));
-      users.forEach(u -> System.out.println(u.getUserChats()));
-
-      session.getTransaction().commit();
+        transaction.commit();
+      } catch (Exception e) {
+        // надо проверить состояние сессии. Если в ней уже был rollback, то словим ошибку
+        transaction.rollback();
+        throw e;
+      }
     }
   }
 
