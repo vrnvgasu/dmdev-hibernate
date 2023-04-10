@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.annotations.OptimisticLocking;
 
@@ -24,7 +25,10 @@ import org.hibernate.annotations.OptimisticLocking;
 @Builder
 @Entity
 // аннотация вместо параметра в LockModeType.OPTIMISTIC в запросе
-@OptimisticLocking(type = OptimisticLockType.VERSION)
+// OptimisticLockType.ALL - при изменении в where указываем все поля сущности
+// OptimisticLockType.DIRTY - при изменении в where только измененные поля из контекста
+@OptimisticLocking(type = OptimisticLockType.DIRTY)
+@DynamicUpdate // при OptimisticLockType.ALL или DIRTY
 public class Payment {
 
   @Id
@@ -32,9 +36,9 @@ public class Payment {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  @Version // версия записи при type = OptimisticLockType.VERSION
-    // при создании записи будет 0, при изменении 1, потом 2 и тд
-  private Long version;
+//  @Version // версия записи при type = OptimisticLockType.VERSION
+//    // при создании записи будет 0, при изменении 1, потом 2 и тд
+//  private Long version;
 
   @Column(nullable = false)
   private Integer amount;
