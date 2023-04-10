@@ -29,19 +29,27 @@ public class HibernateRunner {
       session.beginTransaction();
       session1.beginTransaction();
 
-      // вместо LockModeType.OPTIMISTIC можно использовать @OptimisticLocking у класса
-      // OPTIMISTIC изменяет поле версии при изменении записи
-      // OPTIMISTIC_FORCE_INCREMENT - изменяет поле версии при любом запросе (даже при select)
+      // PESSIMISTIC_FORCE_INCREMENT 0 плохая практика.
+      // Для списка будет сделан запрос на каждую запись, чтобы обновить версионность
+      session.createQuery("select p from Payment p", Payment.class)
+        .setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
+        // timeout 5 сек на блокировку на запрос, потом блокировка будет снята
+        .setHint("javax.persistence.lock.timeout", 5000)
+        .list();
 
       // в двух сессиях берем одну запись и пытаемся ее изменить
-      var payment = session.find(Payment.class, 1L);
+      var payment = session.find(Payment.class, 1L, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
       payment.setAmount(payment.getAmount() + 10);
 
       var theSamePayment = session1.find(Payment.class, 1L);
       theSamePayment.setAmount(theSamePayment.getAmount() + 20);
 
-      session.getTransaction().commit(); // первый коммит победит
-      session1.getTransaction().commit(); // второй коммит бросит OptimisticLockException
+      // session1 зависнет, т.к. не может сделать коммит
+      // посколько session заблокировала доступ через PESSIMISTIC_READ - for share
+      // PESSIMISTIC_WRITE - for update
+      // PESSIMISTIC_FORCE_INCREMENT - for update nowait
+      session1.getTransaction().commit();
+      session.getTransaction().commit();
     }
   }
 

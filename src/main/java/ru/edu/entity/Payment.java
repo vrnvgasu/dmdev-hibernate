@@ -27,8 +27,8 @@ import org.hibernate.annotations.OptimisticLocking;
 // аннотация вместо параметра в LockModeType.OPTIMISTIC в запросе
 // OptimisticLockType.ALL - при изменении в where указываем все поля сущности
 // OptimisticLockType.DIRTY - при изменении в where только измененные поля из контекста
-@OptimisticLocking(type = OptimisticLockType.DIRTY)
-@DynamicUpdate // при OptimisticLockType.ALL или DIRTY
+//@OptimisticLocking(type = OptimisticLockType.DIRTY)
+//@DynamicUpdate // при OptimisticLockType.ALL или DIRTY
 public class Payment {
 
   @Id
@@ -36,9 +36,10 @@ public class Payment {
   @Column(name = "id", nullable = false)
   private Long id;
 
-//  @Version // версия записи при type = OptimisticLockType.VERSION
-//    // при создании записи будет 0, при изменении 1, потом 2 и тд
-//  private Long version;
+  // также нужен при LockModeType.PESSIMISTIC_FORCE_INCREMENT
+  @Version // версия записи при type = OptimisticLockType.VERSION
+    // при создании записи будет 0, при изменении 1, потом 2 и тд
+  private Long version;
 
   @Column(nullable = false)
   private Integer amount;
