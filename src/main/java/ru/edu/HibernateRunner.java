@@ -26,6 +26,7 @@ public class HibernateRunner {
   public static void main(String[] args) {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
       Session session = sessionFactory.openSession()) {
+      TestDataImporter.importData(sessionFactory);
 
       //ReadOnly для всего
 //      session.setDefaultReadOnly(true);

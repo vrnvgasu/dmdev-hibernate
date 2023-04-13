@@ -34,6 +34,9 @@ public class Chat {
 	@Column(nullable = false, unique = true)
 	private String name;
 
+	@Builder.Default
+	private Integer count = 0;
+
 	@Builder.Default // чтобы при создании через Builder применился new HashSet<>()
 	@OneToMany(mappedBy = "chat")
 	// List не делает доп запросы перед insert (в отличие от Set)

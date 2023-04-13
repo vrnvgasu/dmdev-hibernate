@@ -3,6 +3,7 @@ package ru.edu.entity;
 import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import ru.edu.listener.UserChatListener;
 
 @Data
 //@AllArgsConstructor
@@ -26,6 +28,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(exclude = {"user", "chat"})
 @EqualsAndHashCode(exclude = {"user", "chat"})
 @Table(name = "users_chat")
+@EntityListeners(UserChatListener.class)
 public class UserChat extends AuditableEntity<Long> {
 
   @Id

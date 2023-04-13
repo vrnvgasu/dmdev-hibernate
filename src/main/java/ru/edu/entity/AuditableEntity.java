@@ -3,6 +3,7 @@ package ru.edu.entity;
 import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.Column;
+import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -10,12 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.edu.listener.AuditListener;
 
 @Getter
 @Setter
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners({AuditListener.class})
 public abstract class AuditableEntity<T extends Serializable> implements BaseEntity<T> {
 
   @Column(name = "created_at")
@@ -27,15 +30,5 @@ public abstract class AuditableEntity<T extends Serializable> implements BaseEnt
 
   @Column(name = "created_by")
   private String createdBy;
-
-  @PrePersist
-  public void prePersist() {
-    this.setCreatedAt(Instant.now());
-  }
-
-  @PreUpdate
-  public void preUpdate() {
-    this.setUpdatedAt(Instant.now());
-  }
 
 }

@@ -12,7 +12,7 @@
     <!--диалект для постгреса 10 и старше-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
 
-    <property name="hibernate.hbm2ddl.auto">validate</property>
+    <property name="hibernate.hbm2ddl.auto">create</property>
     <!--4 уровня изоляции транзакции: 1,2,3,8-->
     <!--По дефолту 2 READ COMMITTED-->
 <!--    <property name="hibernate.connection.isolation">1</property>-->
