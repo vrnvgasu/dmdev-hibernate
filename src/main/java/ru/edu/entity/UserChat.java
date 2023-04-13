@@ -32,13 +32,13 @@ public class UserChat extends AuditableEntity<Long> {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  public UserChat(Instant createdAt, String createdBy) {
-    super(createdAt, createdBy);
+  public UserChat(Instant createdAt, Instant updatedAt, String createdBy) {
+    super(createdAt, updatedAt, createdBy);
   }
 
   @Builder
-  public UserChat(Long id, User user, Chat chat, Instant createdAt, String createdBy) {
-    super(createdAt, createdBy);
+  public UserChat(Long id, User user, Chat chat, Instant createdAt, Instant updatedAt, String createdBy) {
+    super(createdAt, updatedAt, createdBy);
     this.id = id;
     this.user = user;
     this.chat = chat;

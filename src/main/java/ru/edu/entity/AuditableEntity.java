@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,20 @@ public abstract class AuditableEntity<T extends Serializable> implements BaseEnt
   // java.time.Instant мапится на timestamp
   private Instant createdAt;
 
+  @Column(name = "updated_at")
+  private Instant updatedAt;
+
   @Column(name = "created_by")
   private String createdBy;
+
+  @PrePersist
+  public void prePersist() {
+    this.setCreatedAt(Instant.now());
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    this.setUpdatedAt(Instant.now());
+  }
 
 }

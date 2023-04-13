@@ -1,5 +1,6 @@
 package ru.edu.entity;
 
+import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +32,7 @@ import org.hibernate.annotations.OptimisticLocking;
 // OptimisticLockType.DIRTY - при изменении в where только измененные поля из контекста
 //@OptimisticLocking(type = OptimisticLockType.DIRTY)
 //@DynamicUpdate // при OptimisticLockType.ALL или DIRTY
-public class Payment {
+public class Payment extends AuditableEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

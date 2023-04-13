@@ -32,9 +32,6 @@ public class HibernateRunner {
 
       session.beginTransaction();
 
-      // бросит ошибку при измении бд
-      session.createNativeQuery("SET TRANSACTION READ ONLY").executeUpdate();
-
       // ReadOnly для запроса
 //      session.createQuery("select p from Payment p", Payment.class)
 //        .setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
