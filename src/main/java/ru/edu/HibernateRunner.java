@@ -33,19 +33,15 @@ public class HibernateRunner {
 
       session.beginTransaction();
 
-      // ReadOnly для запроса
-//      session.createQuery("select p from Payment p", Payment.class)
-//        .setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
-//        .setReadOnly(true)
-//        // ИЛИ
-////        .setHint(QueryHints.READ_ONLY, true)
-//        .list();
+
 
       var payment = session.find(Payment.class, 1L);
       // ReadOnly для объекта payment
 //      session.setReadOnly(payment, true);
       // не сделает изменения при завершении транзакции, т.к. ReadOnly выше
       payment.setAmount(payment.getAmount() + 10);
+
+      session.save(payment);
 
 
       session.getTransaction().commit();

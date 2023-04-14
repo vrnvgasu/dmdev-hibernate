@@ -5,7 +5,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import ru.edu.entity.AuditableEntity;
 
-public class AuditListener {
+public class AuditDatesListener {
 
 	@PrePersist
 	public void prePersist(AuditableEntity<?> entity) {

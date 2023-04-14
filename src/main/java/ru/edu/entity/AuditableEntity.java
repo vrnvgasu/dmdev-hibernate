@@ -5,20 +5,18 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.edu.listener.AuditListener;
+import ru.edu.listener.AuditDatesListener;
 
 @Getter
 @Setter
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners({AuditListener.class})
+@EntityListeners({AuditDatesListener.class})
 public abstract class AuditableEntity<T extends Serializable> implements BaseEntity<T> {
 
   @Column(name = "created_at")

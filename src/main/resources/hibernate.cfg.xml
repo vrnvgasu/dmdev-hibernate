@@ -30,5 +30,7 @@
     <mapping class="ru.edu.entity.Programmer"/>
     <mapping class="ru.edu.entity.Manager"/>
     <mapping class="ru.edu.entity.Payment"/>
+    <!--Ради разнообразия добавил через configuration.addAnnotatedClass(Audit.class);-->
+<!--    <mapping class="ru.edu.entity.Audit"/>-->
   </session-factory>
 </hibernate-configuration>
