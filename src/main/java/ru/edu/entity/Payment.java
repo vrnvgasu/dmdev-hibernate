@@ -20,6 +20,9 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Data
 @NoArgsConstructor
@@ -32,6 +35,7 @@ import org.hibernate.annotations.OptimisticLocking;
 // OptimisticLockType.DIRTY - при изменении в where только измененные поля из контекста
 //@OptimisticLocking(type = OptimisticLockType.DIRTY)
 //@DynamicUpdate // при OptimisticLockType.ALL или DIRTY
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED) // из hibernate-envers
 public class Payment extends AuditableEntity<Long> {
 
   @Id
@@ -49,6 +53,7 @@ public class Payment extends AuditableEntity<Long> {
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "receiver_id")
+//  @NotAudited // если не хотим делать аудит User
   private User receiver;
 
 }

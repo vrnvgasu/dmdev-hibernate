@@ -122,6 +122,15 @@
       <version>${querydsl.version}</version>
     </dependency>
 
+    <!--для аудита hibernate-->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-envers</artifactId>
+      <!--версия, как у hibernate-->
+      <version>5.6.15.Final</version>
+    </dependency>
+
+
   </dependencies>
 
   <build>

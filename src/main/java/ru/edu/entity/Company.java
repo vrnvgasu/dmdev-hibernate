@@ -32,6 +32,8 @@ import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.SortNatural;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 @Data
 @NoArgsConstructor
@@ -41,6 +43,7 @@ import org.hibernate.annotations.SortNatural;
 @EqualsAndHashCode(exclude = "users")
 @Entity
 //@BatchSize(size = 3) // подтянет связь на Company при вызове из дочерних связей
+@Audited
 public class Company {
 
   @Id
@@ -53,6 +56,7 @@ public class Company {
   @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
   @MapKey(name = "username")
   @SortNatural
+  @NotAudited
   private Map<String, User> users = new TreeMap<>();
 
 //  @Builder.Default
