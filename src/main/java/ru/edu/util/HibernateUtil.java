@@ -9,6 +9,7 @@ import org.hibernate.event.spi.EventType;
 import org.hibernate.internal.SessionFactoryImpl;
 import ru.edu.converter.BirthdateConverter;
 import ru.edu.entity.Audit;
+import ru.edu.interceptor.GlobalInterceptor;
 import ru.edu.listener.AuditTableListener;
 
 @UtilityClass
@@ -48,6 +49,9 @@ public class HibernateUtil {
 
     configuration.addAttributeConverter(new BirthdateConverter());
     configuration.registerTypeOverride(new JsonBinaryType());
+
+    // подключаем interceptor глобально для всех сессий
+//    configuration.setInterceptor(new GlobalInterceptor());
 
     return configuration;
   }

@@ -17,6 +17,7 @@ import org.hibernate.jdbc.Work;
 import ru.edu.entity.Payment;
 import ru.edu.entity.User;
 import ru.edu.entity.UserChat;
+import ru.edu.interceptor.GlobalInterceptor;
 import ru.edu.util.HibernateUtil;
 import ru.edu.util.TestDataImporter;
 
@@ -25,7 +26,12 @@ public class HibernateRunner {
 
   public static void main(String[] args) {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-      Session session = sessionFactory.openSession()) {
+      Session session = sessionFactory
+        // можно переопределить интерсептор для конкретной сессии
+        .withOptions()
+        .interceptor(new GlobalInterceptor())
+
+        .openSession()) {
       TestDataImporter.importData(sessionFactory);
 
       //ReadOnly для всего
