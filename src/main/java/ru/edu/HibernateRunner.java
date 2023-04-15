@@ -34,39 +34,12 @@ public class HibernateRunner {
 //      TestDataImporter.importData(sessionFactory);
 
       try (var session1 = sessionFactory.openSession()) {
-//        session1.beginTransaction();
-//
-//        var payment = session1.find(Payment.class, 1L);
-//        payment.setAmount(payment.getAmount() + 10);
-//
-//        session1.getTransaction().commit();
-      }
-      try (var session2 = sessionFactory.openSession()) {
-        session2.beginTransaction();
+        session1.beginTransaction();
 
-        // AuditReader - позволяет общаться к сущностям envers (типа payment_aud)
-        AuditReader auditReader = AuditReaderFactory.get(session2);
-        // можем искать сущности по revinfo.rev или revtstmp.revtstmp
-        Payment oldPayment = auditReader.find(Payment.class, 2L, 1L);
-//        Payment oldPayment = auditReader.find(Payment.class, 1L, new Date(1681508157598L));
-        System.out.println(oldPayment); // получили Payment со значениями для этой транзакции
-        // перезапишем текущее значение старым из транзакции
-        session2.replicate(oldPayment, ReplicationMode.OVERWRITE);
+        var payment = session1.find(Payment.class, 1L);
+        payment.setAmount(payment.getAmount() + 10);
 
-//         все записи payment на момент транзакции ближайшей к 400L
-        var payments = auditReader.createQuery()
-          // ищет по ревизии <= 400L
-          .forEntitiesAtRevision(Payment.class, 400L)
-          // поддерживает criteria api
-          .add(AuditEntity.property("amount").ge(450))
-          .add(AuditEntity.property("id").ge(5L))
-          // вернуть только поле amount и id
-          .addProjection(AuditEntity.property("amount"))
-          .addProjection(AuditEntity.property("id"))
-          .getResultList();
-        System.out.println(payments);
-
-        session2.getTransaction().commit();
+        session1.getTransaction().commit();
       }
 
     }
