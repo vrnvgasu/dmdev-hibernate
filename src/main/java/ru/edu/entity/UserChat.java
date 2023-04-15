@@ -18,6 +18,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.edu.listener.UserChatListener;
 
 @Data
@@ -29,6 +31,7 @@ import ru.edu.listener.UserChatListener;
 @EqualsAndHashCode(exclude = {"user", "chat"})
 @Table(name = "users_chat")
 @EntityListeners(UserChatListener.class)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserChat extends AuditableEntity<Long> {
 
   @Id

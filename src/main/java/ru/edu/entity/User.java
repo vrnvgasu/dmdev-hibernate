@@ -36,6 +36,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
@@ -56,7 +58,7 @@ import org.hibernate.annotations.TypeDef;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"company", "userChats"}) // не делать select при отображении связи
+@ToString(exclude = {"company", "userChats", "payments"}) // не делать select при отображении связи
 @Entity // сущность хибернейта
 //@EqualsAndHashCode(exclude = "profile")
 @Table(name = "users", schema = "public") // нужна при SINGLE_TABLE
@@ -82,17 +84,19 @@ import org.hibernate.annotations.TypeDef;
   )
 })
 // тянем сразу 2 связи и одну подсвязь. Можно тянуть и связи связей при желании
-@NamedEntityGraph(
-  name = "WithCompanyAndChat",
-  attributeNodes = {
-    @NamedAttributeNode("company"),
-    // коллекцию userChats и связь этой коллекции на chat
-    @NamedAttributeNode(value = "userChats", subgraph = "withChats")
-  },
-  subgraphs = {
-    @NamedSubgraph(name = "withChats", attributeNodes = @NamedAttributeNode("chat"))
-  }
-)
+//@NamedEntityGraph(
+//  name = "WithCompanyAndChat",
+//  attributeNodes = {
+//    @NamedAttributeNode("company"),
+//    // коллекцию userChats и связь этой коллекции на chat
+//    @NamedAttributeNode(value = "userChats", subgraph = "withChats")
+//  },
+//  subgraphs = {
+//    @NamedSubgraph(name = "withChats", attributeNodes = @NamedAttributeNode("chat"))
+//  }
+//)
+// для использования кеша второго уровня
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id
@@ -133,9 +137,10 @@ public class User implements BaseEntity<Long>, Comparable<User> {
 //  )
 //  private Profile profile;
 
-  //  @Builder.Default нельзя ставить для abstract
+  @Builder.Default // нельзя ставить для abstract
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
   // List не делает доп запросы перед insert (в отличие от Set)
+  @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
   private Set<UserChat> userChats = new HashSet<>();
 
   @Builder.Default

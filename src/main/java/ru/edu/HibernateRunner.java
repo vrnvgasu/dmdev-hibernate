@@ -33,13 +33,27 @@ public class HibernateRunner {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
 //      TestDataImporter.importData(sessionFactory);
 
+      User user = null;
       try (var session1 = sessionFactory.openSession()) {
         session1.beginTransaction();
 
-        var payment = session1.find(Payment.class, 1L);
-        payment.setAmount(payment.getAmount() + 10);
+        user = session1.find(User.class, 1L);
+        user.getCompany().getName();
+        user.getUserChats().size();
+        // кеш первого уровня НЕ сделает второй запрос для user2
+        var user2 = session1.find(User.class, 1L);
 
         session1.getTransaction().commit();
+      }
+      try (var session2 = sessionFactory.openSession()) {
+        session2.beginTransaction();
+
+        // кеш первого уровня НЕ сделает запрос для user1
+        var user1 = session2.find(User.class, 1L);
+        user1.getCompany().getName();
+        user1.getUserChats().size();
+
+        session2.getTransaction().commit();
       }
 
     }
