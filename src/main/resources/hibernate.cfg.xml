@@ -16,6 +16,10 @@
 
     <!--Second Level Cache-->
     <property name="hibernate.cache.use_second_level_cache">true</property>
+    <!--Second Level Cache для обычных запросов-->
+    <property name="hibernate.cache.use_query_cache">true</property>
+<!--Статистика по кешу. Замедляет приложение - только для develop-->
+    <property name="hibernate.generate_statistics">true</property>
     <!--Провайдер для кеша (из библиотеки ehcache)-->
     <property name="hibernate.cache.region.factory_class">org.hibernate.cache.jcache.internal.JCacheRegionFactory</property>
     <!--Путь до настроек регионов (для ehcache)-->

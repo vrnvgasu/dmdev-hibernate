@@ -43,6 +43,12 @@ public class HibernateRunner {
         // кеш первого уровня НЕ сделает второй запрос для user2
         var user2 = session1.find(User.class, 1L);
 
+        var payments = session1.createQuery("select p from Payment p where p.receiver.id = :userId", Payment.class)
+          .setParameter("userId", 1L)
+          .setCacheable(true) // сохранить в кеш
+//          .setCacheRegion("queries") // в определенный region
+          .getResultList();
+
         session1.getTransaction().commit();
       }
       try (var session2 = sessionFactory.openSession()) {
@@ -52,6 +58,16 @@ public class HibernateRunner {
         var user1 = session2.find(User.class, 1L);
         user1.getCompany().getName();
         user1.getUserChats().size();
+
+        var payments = session2.createQuery("select p from Payment p where p.receiver.id = :userId", Payment.class)
+          .setParameter("userId", 1L)
+          .setCacheable(true) // сохранить в кеш
+//          .setCacheRegion("queries") // в определенный region
+          .getResultList();
+
+        // Статистика кеша при опции <property name="hibernate.generate_statistics">true</property>
+        System.out.println(sessionFactory.getStatistics());
+        System.out.println(sessionFactory.getStatistics().getCacheRegionStatistics("Users"));
 
         session2.getTransaction().commit();
       }
