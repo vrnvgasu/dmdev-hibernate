@@ -46,7 +46,7 @@ import org.hibernate.envers.NotAudited;
 @Entity
 //@BatchSize(size = 3) // подтянет связь на Company при вызове из дочерних связей
 @Audited
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Companies")
 public class Company {
 
   @Id

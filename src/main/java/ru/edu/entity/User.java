@@ -96,7 +96,7 @@ import org.hibernate.annotations.TypeDef;
 //  }
 //)
 // для использования кеша второго уровня
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Users")
 public class User implements BaseEntity<Long>, Comparable<User> {
 
   @Id

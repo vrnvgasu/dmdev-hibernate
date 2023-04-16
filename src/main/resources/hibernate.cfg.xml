@@ -12,12 +12,14 @@
     <!--диалект для постгреса 10 и старше-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
 
-    <property name="hibernate.hbm2ddl.auto">validate</property>
+    <property name="hibernate.hbm2ddl.auto">create</property>
 
     <!--Second Level Cache-->
     <property name="hibernate.cache.use_second_level_cache">true</property>
     <!--Провайдер для кеша (из библиотеки ehcache)-->
     <property name="hibernate.cache.region.factory_class">org.hibernate.cache.jcache.internal.JCacheRegionFactory</property>
+    <!--Путь до настроек регионов (для ehcache)-->
+    <property name="hibernate.javax.cache.uri">/ehcache-config.xml</property>
 
     <!--4 уровня изоляции транзакции: 1,2,3,8-->
     <!--По дефолту 2 READ COMMITTED-->

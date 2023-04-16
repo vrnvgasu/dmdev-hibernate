@@ -31,7 +31,7 @@ public class HibernateRunner {
 
   public static void main(String[] args) {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
-//      TestDataImporter.importData(sessionFactory);
+      TestDataImporter.importData(sessionFactory);
 
       User user = null;
       try (var session1 = sessionFactory.openSession()) {
