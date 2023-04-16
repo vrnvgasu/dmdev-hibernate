@@ -1,12 +1,12 @@
 package ru.edu.dao;
 
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
 import ru.edu.entity.Company;
 
 public class CompanyRepository extends RepositoryBase<Integer, Company> {
 
-  public CompanyRepository(SessionFactory sessionFactory) {
-    super(Company.class, sessionFactory);
+  public CompanyRepository(EntityManager entityManager) {
+    super(Company.class, entityManager);
   }
 
 }

@@ -1,12 +1,12 @@
 package ru.edu.dao;
 
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
 import ru.edu.entity.Payment;
 
 public class PaymentRepository extends RepositoryBase<Long, Payment> {
 
-  public PaymentRepository(SessionFactory sessionFactory) {
-    super(Payment.class, sessionFactory);
+  public PaymentRepository(EntityManager entityManager) {
+    super(Payment.class, entityManager);
   }
 
 }

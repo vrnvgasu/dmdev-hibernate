@@ -10,9 +10,14 @@
     <property name="connection.password">qwerty</property>
     <property name="connection.driver_class">org.postgresql.Driver</property>
     <!--диалект для постгреса 10 и старше-->
+
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
 
-    <property name="hibernate.hbm2ddl.auto">create</property>
+    <!--org.hibernate.context.internal.ThreadLocalSessionContext - возвращает сессию для текущего потока.
+    Также закроет автоматически сессию (не надо закрывать явно в коде)-->
+    <property name="hibernate.current_session_context_class">thread</property>
+
+    <property name="hibernate.hbm2ddl.auto">validate</property>
 
     <!--Second Level Cache-->
     <property name="hibernate.cache.use_second_level_cache">true</property>

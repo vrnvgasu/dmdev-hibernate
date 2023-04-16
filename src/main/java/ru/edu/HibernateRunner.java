@@ -1,5 +1,8 @@
 package ru.edu;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -32,17 +35,24 @@ public class HibernateRunner {
 
   public static void main(String[] args) {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
-      TestDataImporter.importData(sessionFactory);
+//      TestDataImporter.importData(sessionFactory);
 
-      try (var session = sessionFactory.openSession()) {
-        session.beginTransaction();
+      // стратегия <property name="hibernate.current_session_context_class">thread</property>
+      // закроет сессию автоматически
+//      session.beginTransaction();
 
-        PaymentRepository paymentRepository = new PaymentRepository(sessionFactory);
-        paymentRepository.findById(1L).ifPresent(System.out::println);
+      // делаем вместо обычной сессии прокси, чтобы работала многопоточность
+      var session = (Session) Proxy.newProxyInstance(
+        SessionFactory.class.getClassLoader(),
+        new Class[]{Session.class},
+        (proxy, method, args1) -> method.invoke(sessionFactory.getCurrentSession(), args1)
+      );
+      session.beginTransaction();
 
-        session.getTransaction().commit();
-      }
+      PaymentRepository paymentRepository = new PaymentRepository(session);
+      paymentRepository.findById(1L).ifPresent(System.out::println);
 
+      session.getTransaction().commit();
     }
   }
 
