@@ -19,6 +19,7 @@ import org.hibernate.graph.GraphSemantic;
 import org.hibernate.graph.RootGraph;
 import org.hibernate.graph.SubGraph;
 import org.hibernate.jdbc.Work;
+import ru.edu.dao.PaymentRepository;
 import ru.edu.entity.Payment;
 import ru.edu.entity.User;
 import ru.edu.entity.UserChat;
@@ -33,43 +34,13 @@ public class HibernateRunner {
     try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory()) {
       TestDataImporter.importData(sessionFactory);
 
-      User user = null;
-      try (var session1 = sessionFactory.openSession()) {
-        session1.beginTransaction();
+      try (var session = sessionFactory.openSession()) {
+        session.beginTransaction();
 
-        user = session1.find(User.class, 1L);
-        user.getCompany().getName();
-        user.getUserChats().size();
-        // кеш первого уровня НЕ сделает второй запрос для user2
-        var user2 = session1.find(User.class, 1L);
+        PaymentRepository paymentRepository = new PaymentRepository(sessionFactory);
+        paymentRepository.findById(1L).ifPresent(System.out::println);
 
-        var payments = session1.createQuery("select p from Payment p where p.receiver.id = :userId", Payment.class)
-          .setParameter("userId", 1L)
-          .setCacheable(true) // сохранить в кеш
-//          .setCacheRegion("queries") // в определенный region
-          .getResultList();
-
-        session1.getTransaction().commit();
-      }
-      try (var session2 = sessionFactory.openSession()) {
-        session2.beginTransaction();
-
-        // кеш первого уровня НЕ сделает запрос для user1
-        var user1 = session2.find(User.class, 1L);
-        user1.getCompany().getName();
-        user1.getUserChats().size();
-
-        var payments = session2.createQuery("select p from Payment p where p.receiver.id = :userId", Payment.class)
-          .setParameter("userId", 1L)
-          .setCacheable(true) // сохранить в кеш
-//          .setCacheRegion("queries") // в определенный region
-          .getResultList();
-
-        // Статистика кеша при опции <property name="hibernate.generate_statistics">true</property>
-        System.out.println(sessionFactory.getStatistics());
-        System.out.println(sessionFactory.getStatistics().getCacheRegionStatistics("Users"));
-
-        session2.getTransaction().commit();
+        session.getTransaction().commit();
       }
 
     }
