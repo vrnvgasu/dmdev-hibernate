@@ -69,13 +69,13 @@ public class Company implements BaseEntity<Integer> {
 //  @AttributeOverride(name = "language", column = @Column(name = "lang"))
 //  private List<LocaleInfo> locales = new ArrayList<>();
 
-//  @Builder.Default
-//  @ElementCollection
-//  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
-//  @Column(name = "description")
-//  @MapKeyColumn(name = "lang")
-//  // используем одно поле из таблицы справочника (только на чтение)
-//  private Map<String, String> localeDescriptions = new HashMap<>();
+  @Builder.Default
+  @ElementCollection
+  @CollectionTable(name = "company_locale", joinColumns = @JoinColumn(name = "company_id"))
+  @Column(name = "description")
+  @MapKeyColumn(name = "lang")
+  // используем одно поле из таблицы справочника (только на чтение)
+  private Map<String, String> localeDescriptions = new HashMap<>();
 
   public void addUser(User user) {
     users.put(user.getUsername(), user);

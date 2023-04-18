@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -84,17 +85,21 @@ import org.hibernate.annotations.TypeDef;
   )
 })
 // тянем сразу 2 связи и одну подсвязь. Можно тянуть и связи связей при желании
-//@NamedEntityGraph(
-//  name = "WithCompanyAndChat",
-//  attributeNodes = {
-//    @NamedAttributeNode("company"),
-//    // коллекцию userChats и связь этой коллекции на chat
-//    @NamedAttributeNode(value = "userChats", subgraph = "withChats")
-//  },
-//  subgraphs = {
-//    @NamedSubgraph(name = "withChats", attributeNodes = @NamedAttributeNode("chat"))
-//  }
-//)
+@NamedEntityGraph(
+  name = "WithCompanyAndChat",
+  attributeNodes = {
+    @NamedAttributeNode("company"),
+    // коллекцию userChats и связь этой коллекции на chat
+    @NamedAttributeNode(value = "userChats", subgraph = "withChats")
+  },
+  subgraphs = {
+    @NamedSubgraph(name = "withChats", attributeNodes = @NamedAttributeNode("chat"))
+  }
+)
+@NamedEntityGraph(
+  name = "WithCompany",
+  attributeNodes = {@NamedAttributeNode("company")}
+)
 // для использования кеша второго уровня
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "Users")
 public class User implements BaseEntity<Long>, Comparable<User> {
@@ -117,7 +122,7 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   //  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
 //  @Type(type = "jsonb") // работает, т.к. в JsonBinaryType есть метод public String getName() {return "jsonb";}
   @Type(type = "outTypeName") // переопределили лаконичное название JsonBinaryType выше в @TypeDef
-  private String info;
+  private UUID info;
 
   // cascade - что делать со связью
   // PERSIST не логично, т.к. company - главная сущность в этом отношении

@@ -2,13 +2,16 @@ package ru.edu.dao;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.edu.entity.BaseEntity;
 
+@Getter
 @RequiredArgsConstructor
 public abstract class RepositoryBase<K extends Serializable, E extends BaseEntity<K>> implements Repository<K, E> {
 
@@ -33,8 +36,8 @@ public abstract class RepositoryBase<K extends Serializable, E extends BaseEntit
   }
 
   @Override
-  public Optional<E> findById(K id) {
-    return Optional.ofNullable(entityManager.find(clazz, id));
+  public Optional<E> findById(K id, Map<String, Object> properties) {
+    return Optional.ofNullable(entityManager.find(clazz, id, properties));
   }
 
   @Override
