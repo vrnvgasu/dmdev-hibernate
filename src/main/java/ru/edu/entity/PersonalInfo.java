@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class PersonalInfo implements Serializable {
 //  @Convert(converter = BirthdateConverter.class)
   @Column(name = "birth_date")
   // добавили наш собственный тип ru.edu.entity.Birthday
+  @NotNull
   private LocalDate birthDate;
 
 }

@@ -2,7 +2,13 @@ package ru.edu.service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.graph.GraphSemantic;
 import ru.edu.dao.UserRepository;
@@ -12,6 +18,7 @@ import ru.edu.entity.User;
 import ru.edu.mapper.Mapper;
 import ru.edu.mapper.UserCreateMapper;
 import ru.edu.mapper.UserReadMapper;
+import ru.edu.validation.UpdateCheck;
 
 @RequiredArgsConstructor
 public class UserService {
@@ -24,7 +31,16 @@ public class UserService {
 
   @Transactional
   public Long create(UserCreateDto userDto) {
-    // validation
+    ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+    // validator лучше делать бином на все приложение
+    Validator validator = validatorFactory.getValidator();
+    // получили множество всех ошибок
+//    Set<ConstraintViolation<UserCreateDto>> validationResult = validator.validate(userDto);
+    // проверять только аннотации с меткой UpdateCheck.class
+    Set<ConstraintViolation<UserCreateDto>> validationResult = validator.validate(userDto, UpdateCheck.class);
+    if (!validationResult.isEmpty()) {
+      throw new ConstraintViolationException(validationResult);
+    }
 
     User user = userCreateMapper.mapFrom(userDto);
     return userRepository.save(user).getId();

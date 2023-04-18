@@ -30,6 +30,7 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -111,6 +112,7 @@ public class User implements BaseEntity<Long>, Comparable<User> {
   @Embedded
   // указали явный маппинг поля personalLastname к колонке lastname
   @AttributeOverride(name = "personalLastname", column = @Column(name = "lastname"))
+//  @Valid // проверяет валидацию вложенных сущностей
   private PersonalInfo personalInfo;
 
   @Column(unique = true)

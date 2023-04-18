@@ -91,10 +91,10 @@ public class HibernateRunner {
         .newInstance(userRepository, userReadMapper, userCreateMapper);
 
       UserCreateDto userCreateDto = new UserCreateDto(PersonalInfo.builder()
-        .personalLastname("last1")
-        .firstname("first2")
-        .birthDate(LocalDate.parse("2021-01-01"))
-        .build(), "username1", null, Role.USER, 1);
+        .personalLastname("last4")
+        .firstname("first4")
+//        .birthDate(LocalDate.parse("2021-01-01"))
+        .build(), "username9", null, null, 1);
       userService.create(userCreateDto);
 
       // транзакция явно не нужна при @Transactional
